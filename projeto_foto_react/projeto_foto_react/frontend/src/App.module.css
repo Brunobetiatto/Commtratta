@@ -1,0 +1,315 @@
+/* App.css - Versão Completa Corrigida */
+
+/* Variáveis de cores e estilos */
+:root {
+  --primary-color: #4361ee;
+  --primary-hover: #3a56d4;
+  --secondary-color: #f72585;
+  --secondary-hover: #e5177b;
+  --success-color: #4cc9f0;
+  --background-light: #f8f9fa;
+  --card-bg: #ffffff;
+  --text-color: #2b2d42;
+  --text-light: #8d99ae;
+  --border-radius: 12px;
+  --box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+  --transition: all 0.3s ease;
+}
+
+/* Reset e estilos base */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Estrutura principal fixando o footer no rodapé */
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  margin: 0;
+  font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  color: var(--text-color);
+  line-height: 1.6;
+  background-color: #2b2d42;
+}
+.appFooter {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 1rem;
+  text-align: center;
+}
+
+.appMainContent {
+  flex: 1;
+  padding: 20px;
+  justify-content: center;
+}
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  min-width: 100%;
+}
+
+.appWrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+}
+
+/* Header */
+header {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 1rem;
+  text-align: center;
+  width: 100%;
+}
+
+/* Conteúdo principal */
+.main-content {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 0;
+}
+.appWrapper{
+  width: 100%;
+  height: 100%;
+  flex: 1;
+}
+.appMainContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;      /* centraliza horizontalmente */
+}
+/* Container principal */
+.container {
+  width: 100%;
+  max-width: 800px;
+  padding: 0 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Footer fixo no rodapé */
+footer {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 1rem;
+  text-align: center;
+  width: 100%;
+}
+
+
+/* Tipografia */
+h2 {
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 2rem;
+  color: var(--primary-color);
+  font-weight: 600;
+  position: relative;
+  padding-bottom: 0.5rem;
+}
+
+h2::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(to right, var(--primary-color), var(--success-color));
+  border-radius: 2px;
+}
+
+/* Botões */
+button {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: var(--border-radius);
+  margin-top: 1rem;
+  width: auto;
+  min-width: 200px;
+  transition: var(--transition);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+button:hover {
+  background-color: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Lista de usuários */
+.lista {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 2rem;
+  width: 100%;
+}
+
+.card {
+  background-color: var(--card-bg);
+  border: none;
+  border-radius: var(--border-radius);
+  padding: 1.5rem;
+  box-shadow: var(--box-shadow);
+  text-align: center;
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 180px;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+}
+
+.card img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-bottom: 1rem;
+  border: 3px solid var(--success-color);
+}
+
+.card p {
+  margin-top: 0.5rem;
+  font-weight: 500;
+  color: var(--text-color);
+}
+
+/* Formulário */
+.formContainer {
+  width: 100%;
+  max-width: 400px;
+  background-color: var(--card-bg);
+  padding: 2.5rem;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  margin: 2rem auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.formContainer form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.formContainer input {
+  width: 100%;
+  padding: 12px 16px;
+  margin: 0.75rem 0;
+  border-radius: var(--border-radius);
+  border: 1px solid #e0e0e0;
+  font-size: 1rem;
+  transition: var(--transition);
+}
+
+.formContainer input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+}
+
+/* Botões do formulário */
+.formContainer button {
+  width: 100%;
+  max-width: 200px;
+}
+
+button[type="button"] {
+  background-color: var(--secondary-color);
+  margin-top: 0.75rem;
+}
+
+button[type="button"]:hover {
+  background-color: var(--secondary-hover);
+}
+
+/* Input file personalizado */
+.file-input-container {
+  position: relative;
+  margin: 1rem 0;
+  width: 100%;
+}
+
+.file-input-container input[type="file"] {
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+.file-input-label {
+  display: block;
+  padding: 12px 16px;
+  background-color: #f0f0f0;
+  border-radius: var(--border-radius);
+  text-align: center;
+  cursor: pointer;
+  transition: var(--transition);
+  border: 1px dashed #ccc;
+  width: 100%;
+}
+
+.file-input-label:hover {
+  background-color: #e0e0e0;
+}
+
+.file-input-label span {
+  color: var(--text-light);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .container {
+    padding: 0 1rem;
+  }
+  
+  .card {
+    width: 150px;
+    padding: 1rem;
+  }
+  
+  .form-container {
+    padding: 1.5rem;
+  }
+}

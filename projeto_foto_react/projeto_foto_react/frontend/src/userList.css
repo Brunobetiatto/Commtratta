@@ -1,0 +1,39 @@
+.container {
+    max-width: 800px;
+    margin: 2rem auto;
+    text-align: center;
+  }
+  
+  .card-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+  }
+  
+  .user-card {
+    width: 150px;
+    padding: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    background-color: #f9f9f9;
+    transition: transform 0.2s;
+  }
+  
+  .user-card:hover {
+    transform: scale(1.05);
+  }
+  
+  .user-image {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+  
+  .user-name {
+    margin-top: 0.5rem;
+    font-weight: bold;
+    font-size: 1.1rem;
+  }
+  

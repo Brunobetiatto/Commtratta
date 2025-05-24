@@ -7,6 +7,7 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+projeto_foto_react\projeto_foto_react\backend\node_modules
 node_modules
 dist
 dist-ssr

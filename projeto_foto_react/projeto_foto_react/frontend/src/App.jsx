@@ -1,33 +1,38 @@
 import { useState } from 'react';
 import Listagem from './pages/Listagem';
 import Cadastro from './pages/Cadastro';
+import Sidebar from './Sidebar'; 
 import styles from './App.module.css';
 
 function App() {
   const [view, setView] = useState('listagem');
 
   return (
-    <div className={styles.appWrapper}>
-      <header className={styles.appHeader}>
-        <h1>Gerenciamento de Usuários</h1>
-      </header>
+    <div className={styles.appContainer}>
+      <Sidebar /> 
       
-      <main className={styles.appMainContent}>
-        <div className={styles.contentContainer}>
-          {view === 'listagem' ? (
-            <Listagem onAddUser={() => setView('cadastro')} />
-          ) : (
-            <Cadastro 
-              onCancel={() => setView('listagem')} 
-              onSuccess={() => setView('listagem')} 
-            />
-          )}
-        </div>
-      </main>
-      
-      <footer className={styles.appFooter}>
-        <p>Sistema de Usuários © {new Date().getFullYear()}</p>
-      </footer>
+      <div className={styles.mainContent}>
+        <header className={styles.appHeader}>
+          <h1>Gerenciamento de Usuários</h1>
+        </header>
+        
+        <main className={styles.appMainContent}>
+          <div className={styles.contentContainer}>
+            {view === 'listagem' ? (
+              <Listagem onAddUser={() => setView('cadastro')} />
+            ) : (
+              <Cadastro 
+                onCancel={() => setView('listagem')} 
+                onSuccess={() => setView('listagem')} 
+              />
+            )}
+          </div>
+        </main>
+        
+        <footer className={styles.appFooter}>
+          <p>Sistema de Usuários © {new Date().getFullYear()}</p>
+        </footer>
+      </div>
     </div>
   );
 }

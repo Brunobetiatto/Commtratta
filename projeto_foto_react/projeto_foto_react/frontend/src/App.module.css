@@ -40,7 +40,36 @@ body {
   padding: 1rem;
   text-align: center;
 }
+.appContainer {
+  display: flex;
+  min-height: 100vh;
+}
 
+.mainContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin-left: 280px; /* Largura da sidebar */
+  width: calc(100% - 280px);
+}
+
+/* Ajuste de responsividade */
+@media (max-width: 992px) {
+  .mainContent {
+    margin-left: 0;
+    width: 100%;
+  }
+  
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+  
+  /* Adicione uma classe para mostrar a sidebar em mobile */
+  .sidebar.open {
+    transform: translateX(0);
+  }
+}
 .appMainContent {
   flex: 1;
   padding: 20px;
@@ -106,7 +135,7 @@ header {
 
 /* Footer fixo no rodapé */
 footer {
-  background-color: var(--primary-color);
+ 
   color: white;
   padding: 1rem;
   text-align: center;

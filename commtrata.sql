@@ -10,7 +10,7 @@ CREATE TABLE usuarios (
     id             BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     email          VARCHAR(120)  NOT NULL UNIQUE,
     telefone       VARCHAR(20),
-    senha_hash     CHAR(60)      NOT NULL,
+    senha     CHAR(60)      NOT NULL,
     interesses     TEXT,
     criado_em      DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
     atualizado_em  DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP

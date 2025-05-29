@@ -1,0 +1,85 @@
+/* Estilos para a Sidebar */
+.sidebar {
+  width: 280px;
+  background: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.03);
+  padding: 25px 20px;
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  position: fixed;
+  height: 100vh;
+  transition: all 0.25s ease;
+  border-right: 1px solid #e2e8f0;
+}
+
+.profileContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 20px 0;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.profileImage {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #e2e8f0;
+  margin-bottom: 15px;
+  background-color: #f8f9fa;
+}
+
+.name {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 5px;
+  color: #2b2d42;
+}
+
+.role {
+  color: #adb5bd;
+  font-size: 14px;
+  margin-bottom: 15px;
+}
+
+.descriptionContainer {
+  padding: 20px 0;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.description {
+  color: #495057;
+  font-size: 14px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.sidebarFooter {
+  margin-top: auto;
+  padding-top: 20px;
+}
+
+.logoutButton {
+  width: 100%;
+  background: transparent;
+  border: 1px solid #e2e8f0;
+  color: #495057;
+  padding: 10px 15px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.25s ease;
+  font-weight: 500;
+}
+
+.logoutButton:hover {
+  background-color: #f8f9fa;
+  border-color: #adb5bd;
+}

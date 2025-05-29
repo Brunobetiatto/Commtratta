@@ -8,6 +8,7 @@ pnpm-debug.log*
 lerna-debug.log*
 
 projeto_foto_react\projeto_foto_react\backend\node_modules
+projeto_foto_react\projeto_foto_react\backend\db.js
 node_modules
 dist
 dist-ssr

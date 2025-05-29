@@ -1,25 +1,48 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
+import { useAuth } from './contexts/AuthContext';
 import Listagem from './pages/Listagem';
 import Cadastro from './pages/Cadastro';
-import Sidebar from './Sidebar'; 
+import Sidebar from './components/Sidebar';
+import LoginScreen from './components/LoginScreen';
 import styles from './App.module.css';
+
 
 function App() {
   const [view, setView] = useState('listagem');
+  const { user, isAuthenticated, loading, logout } = useAuth();
+
+  if (loading) {
+    return (
+      <div className={styles.loadingScreen}>
+        <div className={styles.loadingSpinner}></div>
+        <p className={styles.loadingText}>Carregando...</p>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <LoginScreen />;
+  }
 
   return (
     <div className={styles.appContainer}>
-      <Sidebar /> 
+      <Sidebar user={user} />
       
       <div className={styles.mainContent}>
         <header className={styles.appHeader}>
-          <h1>Gerenciamento de Usuários</h1>
+          <h1>Gerenciamento de Contratos</h1>
+          <div className={styles.userInfo}>
+            <span>{user.email}</span>
+            <button onClick={logout} className={styles.logoutBtn}>
+              Sair
+            </button>
+          </div>
         </header>
         
         <main className={styles.appMainContent}>
           <div className={styles.contentContainer}>
             {view === 'listagem' ? (
-              <Listagem onAddUser={() => setView('cadastro')} />
+              <Listagem onAddContract={() => setView('cadastro')} />
             ) : (
               <Cadastro 
                 onCancel={() => setView('listagem')} 
@@ -30,7 +53,7 @@ function App() {
         </main>
         
         <footer className={styles.appFooter}>
-          <p>Sistema de Usuários © {new Date().getFullYear()}</p>
+          <p>Sistema de Contratos © {new Date().getFullYear()}</p>
         </footer>
       </div>
     </div>

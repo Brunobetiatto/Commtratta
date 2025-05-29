@@ -30,13 +30,7 @@ function App() {
       
       <div className={styles.mainContent}>
         <header className={styles.appHeader}>
-          <h1>Gerenciamento de Contratos</h1>
-          <div className={styles.userInfo}>
-            <span>{user.email}</span>
-            <button onClick={logout} className={styles.logoutBtn}>
-              Sair
-            </button>
-          </div>
+          <h1>Contratos</h1>
         </header>
         
         <main className={styles.appMainContent}>

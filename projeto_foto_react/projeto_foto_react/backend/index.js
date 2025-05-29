@@ -3,6 +3,7 @@ import cors from "cors";
 import path from "path";
 import userRoutes from "./routes/UserRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
+import contractRoutes from './routes/ContractRoutes.js';
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -13,6 +14,8 @@ app.use(express.json());
 app.use("/uploads", express.static(path.resolve("uploads")));
 app.use("/api", userRoutes);
 app.use("/auth", authRoutes);
+app.use("/api", userRoutes);
+app.use("/api/contracts", contractRoutes); // Adicione esta linha
 
 // Testar conexão com o banco
 import db from "./db.js";

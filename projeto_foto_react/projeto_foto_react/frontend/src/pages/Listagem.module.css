@@ -1,0 +1,172 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.addButton {
+  background-color: #4361ee;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  transition: background-color 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.addButton:hover {
+  background-color: #3a56d4;
+}
+
+.contractsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 25px;
+}
+
+.contractCard {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s, box-shadow 0.3s;
+  border: 1px solid #eaeaea;
+  height: 100%;
+}
+
+.contractCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 15px;
+}
+
+.cardHeader h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #2b2d42;
+  flex: 1;
+}
+
+.status {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+  text-transform: uppercase;
+}
+
+.status.aberto {
+  background-color: #e6f4ff;
+  color: #1890ff;
+}
+
+.status.cadastrado {
+  background-color: #f0f0f0;
+  color: #595959;
+}
+
+.status.assinado {
+  background-color: #e6f7ff;
+  color: #13c2c2;
+}
+
+.status.aprovado {
+  background-color: #f6ffed;
+  color: #52c41a;
+}
+
+.description {
+  color: #595959;
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 20px;
+  flex-grow: 1;
+}
+
+.cardDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.detailItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: #595959;
+}
+
+.detailItem i {
+  width: 20px;
+  color: #4361ee;
+}
+
+.signButton {
+  background-color: #4cc9f0;
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.signButton:hover {
+  background-color: #3aa8c9;
+}
+
+.emptyState {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 50px 20px;
+  color: #8c8c8c;
+}
+
+.emptyState i {
+  font-size: 48px;
+  margin-bottom: 20px;
+  color: #d9d9d9;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  font-size: 16px;
+  color: #595959;
+}
+
+.error {
+  text-align: center;
+  padding: 40px;
+  color: #e63946;
+  background-color: #fff2f0;
+  border-radius: 8px;
+}

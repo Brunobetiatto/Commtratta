@@ -1,20 +1,90 @@
+// backend/controllers/UserController.js
 import db from "../db.js";
 
-export const addUser = (req, res) => {
-  const nome = req.body.nome;
-  const imagem = req.file ? `/uploads/${req.file.filename}` : null;
+export const addUser = async (req, res) => {
+  try {
+    // Inicia a transação diretamente na conexão existente
+    await db.beginTransaction();
 
-  const query = "INSERT INTO users (nome, imagem) VALUES (?, ?)";
-  db.query(query, [nome, imagem], (err, result) => {
-    if (err) return res.status(500).json(err);
-    return res.status(200).json({ message: "Usuário adicionado com sucesso" });
-  });
+    const { email, telefone, senha, interesses, tipo, cpf, cnpj, descricao } = req.body;
+    const imagem = req.file ? `/uploads/${req.file.filename}` : null;
+
+    // Verificar se o email já existe
+    const [existingUser] = await db.query(
+      'SELECT * FROM usuarios WHERE email = ?',
+      [email]
+    );
+
+    if (existingUser.length > 0) {
+      return res.status(400).json({ message: 'Email já cadastrado' });
+    }
+
+    // Inserir novo usuário
+    const [result] = await db.query(
+      'INSERT INTO usuarios (email, telefone, senha, interesses, img) VALUES (?, ?, ?, ?, ?)',
+      [email, telefone, senha, interesses, imagem]
+    );
+    const userId = result.insertId;
+
+    // Inserir na tabela específica
+    if (tipo === 'fisica') {
+      // Verificar se CPF já existe
+      const [existingCPF] = await db.query(
+        'SELECT * FROM pessoa_fisica WHERE cpf = ?',
+        [cpf]
+      );
+
+      if (existingCPF.length > 0) {
+        await db.rollback();
+        return res.status(400).json({ message: 'CPF já cadastrado' });
+      }
+
+      await db.query(
+        'INSERT INTO pessoa_fisica (id, cpf) VALUES (?, ?)',
+        [userId, cpf]
+      );
+    } else if (tipo === 'juridica') {
+      // Verificar se CNPJ já existe
+      const [existingCNPJ] = await db.query(
+        'SELECT * FROM pessoa_juridica WHERE cnpj = ?',
+        [cnpj]
+      );
+
+      if (existingCNPJ.length > 0) {
+        await db.rollback();
+        return res.status(400).json({ message: 'CNPJ já cadastrado' });
+      }
+
+      await db.query(
+        'INSERT INTO pessoa_juridica (id, cnpj, descricao) VALUES (?, ?, ?)',
+        [userId, cnpj, descricao]
+      );
+    } else {
+      throw new Error('Tipo de pessoa inválido');
+    }
+
+    await db.commit();
+    res.status(201).json({ 
+      message: 'Usuário cadastrado com sucesso',
+      userId
+    });
+
+  } catch (error) {
+    await db.rollback();
+    console.error('Erro ao cadastrar usuário:', error);
+    res.status(500).json({ 
+      message: 'Erro interno do servidor',
+      error: error.message // Adiciona a mensagem de erro para debug
+    });
+  }
 };
 
-export const getUsers = (req, res) => {
-  const query = "SELECT * FROM users";
-  db.query(query, (err, results) => {
-    if (err) return res.status(500).json(err);
-    return res.status(200).json(results);
-  });
-};
+export const getUsers = async (req, res) => {
+  try {
+    const [users] = await db.query('SELECT id, email, telefone, interesses, img FROM usuarios');
+    res.status(200).json(users);
+  } catch (error) {
+    console.error('Erro ao buscar usuários:', error);
+    res.status(500).json({ message: 'Erro interno do servidor' });
+  }
+}; 

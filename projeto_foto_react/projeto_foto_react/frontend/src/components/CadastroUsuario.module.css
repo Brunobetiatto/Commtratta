@@ -1,0 +1,229 @@
+/* frontend/components/CadastroUsuario.module.css */
+
+.cadastroContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 2rem;
+  animation: fadeIn 0.6s ease-out;
+}
+
+.cadastroCard {
+  width: 100%;
+  max-width: 500px;
+  padding: 2.5rem;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.cadastroCard h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #2d3748;
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+/* Botões de seleção de tipo de pessoa */
+.tipoPessoaContainer {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.tipoPessoaButton {
+  padding: 0.75rem 1.5rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  background-color: #f8fafc;
+  color: #4a5568;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  flex: 1;
+  max-width: 200px;
+}
+
+.tipoPessoaButton:hover {
+  border-color: #cbd5e0;
+  background-color: #edf2f7;
+}
+
+.tipoPessoaButton.active {
+  background: linear-gradient(to right, #667eea, #764ba2);
+  color: white;
+  border-color: #667eea;
+}
+
+/* Formulário */
+.cadastroForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.formGroup label {
+  color: #4a5568;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.formGroup input,
+.formGroup textarea,
+.formGroup select {
+  padding: 0.85rem 1rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background-color: #f8fafc;
+}
+
+.formGroup input:focus,
+.formGroup textarea:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+  background-color: white;
+}
+
+.formGroup textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+/* Botão de Submit */
+.submitButton {
+  width: 100%;
+  padding: 1rem;
+  background: linear-gradient(to right, #667eea, #764ba2);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 0.5rem;
+}
+
+.submitButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.submitButton:disabled {
+  background: #cbd5e0;
+  transform: none;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+/* Mensagens de Erro */
+.errorMessage {
+  padding: 1rem;
+  background-color: #fff5f5;
+  color: #e53e3e;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+  border-left: 4px solid #e53e3e;
+}
+
+/* Link para Login */
+.loginLink {
+  text-align: center;
+  margin-top: 2rem;
+  color: #718096;
+  font-size: 0.95rem;
+}
+
+.loginLink a {
+  color: #667eea;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.loginLink a:hover {
+  color: #764ba2;
+  text-decoration: underline;
+}
+
+/* Animação */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Pré-visualização da imagem */
+.imagemPreviewContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.imagemPreview {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #e2e8f0;
+  margin-bottom: 1rem;
+}
+
+/* Botão de upload personalizado */
+.uploadButton {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: #edf2f7;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s;
+  text-align: center;
+  border: 1px dashed #cbd5e0;
+  width: 100%;
+}
+
+.uploadButton:hover {
+  background: #e2e8f0;
+}
+
+/* Responsividade */
+@media (max-width: 480px) {
+  .cadastroContainer {
+    padding: 1rem;
+  }
+  
+  .cadastroCard {
+    padding: 1.5rem;
+  }
+  
+  .tipoPessoaContainer {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .tipoPessoaButton {
+    width: 100%;
+    max-width: none;
+  }
+}

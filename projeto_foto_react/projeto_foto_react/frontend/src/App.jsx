@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
+// frontend/App.jsx
+import React from 'react';
 import { useAuth } from './contexts/AuthContext';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Listagem from './pages/Listagem';
-import Cadastro from './pages/Cadastro';
 import Sidebar from './components/Sidebar';
-import LoginScreen from './components/LoginScreen';
+import CadastroContrato from './components/CadastroUsuario';
 import styles from './App.module.css';
 
-
 function App() {
-  const [view, setView] = useState('listagem');
   const { user, isAuthenticated, loading, logout } = useAuth();
+  const location = useLocation();
 
   if (loading) {
     return (
@@ -20,13 +20,14 @@ function App() {
     );
   }
 
+  // Se não estiver autenticado, redireciona para login
   if (!isAuthenticated) {
-    return <LoginScreen />;
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   return (
     <div className={styles.appContainer}>
-      <Sidebar user={user} />
+      <Sidebar user={user} logout={logout} />
       
       <div className={styles.mainContent}>
         <header className={styles.appHeader}>
@@ -35,14 +36,10 @@ function App() {
         
         <main className={styles.appMainContent}>
           <div className={styles.contentContainer}>
-            {view === 'listagem' ? (
-              <Listagem onAddContract={() => setView('cadastro')} />
-            ) : (
-              <Cadastro 
-                onCancel={() => setView('listagem')} 
-                onSuccess={() => setView('listagem')} 
-              />
-            )}
+            <Routes>
+              <Route path="/" element={<Listagem />} />
+              <Route path="/cadastro-contrato" element={<CadastroContrato />} />
+            </Routes>
           </div>
         </main>
         

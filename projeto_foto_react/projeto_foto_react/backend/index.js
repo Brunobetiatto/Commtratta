@@ -1,3 +1,4 @@
+// backend/index.js
 import express from "express";
 import cors from "cors";
 import path from "path";
@@ -12,10 +13,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use("/uploads", express.static(path.resolve("uploads")));
-app.use("/api", userRoutes);
+app.use("/api/usuarios", userRoutes); // Atualizado para /api/usuarios
 app.use("/auth", authRoutes);
-app.use("/api", userRoutes);
-app.use("/api/contracts", contractRoutes); // Adicione esta linha
+app.use("/api/contracts", contractRoutes);
 
 // Testar conexão com o banco
 import db from "./db.js";

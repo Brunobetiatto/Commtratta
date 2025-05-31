@@ -21,10 +21,21 @@ export const addUser = async (req, res) => {
 
     // Inserir novo usuário
     const [result] = await db.query(
-      'INSERT INTO usuarios (email, telefone, senha, interesses, img) VALUES (?, ?, ?, ?, ?)',
-      [email, telefone, senha, interesses, imagem]
+      'INSERT INTO usuarios (email, telefone, senha, img) VALUES (?, ?, ?, ?)',
+      [email, telefone, senha, imagem]
     );
     const userId = result.insertId;
+
+    // Inserir interesses na tabela de relação usuario_interesses
+    if (interesses && interesses.length > 0) {
+      const interessesArray = interesses.split(',');
+      for (const categoriaId of interessesArray) {
+        await db.query(
+          'INSERT INTO usuario_interesses (usuario_id, categoria_id) VALUES (?, ?)',
+          [userId, categoriaId]
+        );
+      }
+    }
 
     // Inserir na tabela específica
     if (tipo === 'fisica') {
@@ -74,10 +85,11 @@ export const addUser = async (req, res) => {
     console.error('Erro ao cadastrar usuário:', error);
     res.status(500).json({ 
       message: 'Erro interno do servidor',
-      error: error.message // Adiciona a mensagem de erro para debug
+      error: error.message
     });
   }
 };
+
 
 export const getUsers = async (req, res) => {
   try {

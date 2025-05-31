@@ -70,6 +70,15 @@ CREATE TABLE categorias (
     nome   VARCHAR(80) NOT NULL UNIQUE
 );
 
+CREATE TABLE usuario_interesses (
+    usuario_id BIGINT UNSIGNED NOT NULL,
+    categoria_id BIGINT UNSIGNED NOT NULL,
+    PRIMARY KEY (usuario_id, categoria_id),
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+    FOREIGN KEY (categoria_id) REFERENCES categorias(id) ON DELETE CASCADE
+);
+
+
 /* fornecedor × categoria (N-para-N) */
 CREATE TABLE fornecedor_categoria (
     id_fornecedor BIGINT UNSIGNED NOT NULL,

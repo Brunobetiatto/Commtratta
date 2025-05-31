@@ -1,27 +1,43 @@
 // frontend/components/CadastroUsuario.jsx
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import styles from './CadastroUsuario.module.css';
 
 const CadastroUsuario = () => {
   const navigate = useNavigate();
-  const [tipoPessoa, setTipoPessoa] = useState('fisica'); // 'fisica' ou 'juridica'
+  const [tipoPessoa, setTipoPessoa] = useState('fisica');
   const [formData, setFormData] = useState({
     email: '',
     telefone: '',
     senha: '',
     confirmarSenha: '',
-    interesses: '',
     imagem: null,
     cpf: '',
     cnpj: '',
     descricao: ''
   });
+  const [categorias, setCategorias] = useState([]);
+  const [interessesSelecionados, setInteressesSelecionados] = useState([]);
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imagemPreview, setImagemPreview] = useState(null);
   const fileInputRef = useRef(null);
+
+  // Buscar categorias do backend
+  useEffect(() => {
+    const fetchCategorias = async () => {
+      try {
+        const response = await axios.get('http://localhost:8800/api/categorias');
+        setCategorias(response.data);
+      } catch (err) {
+        console.error('Erro ao buscar categorias:', err);
+        setError('Erro ao carregar categorias. Tente recarregar a página.');
+      }
+    };
+
+    fetchCategorias();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -54,6 +70,21 @@ const CadastroUsuario = () => {
     setTipoPessoa(tipo);
   };
 
+  const handleInteresseChange = (categoriaId) => {
+    setInteressesSelecionados(prev => {
+      // Se já está selecionado, remove
+      if (prev.includes(categoriaId)) {
+        return prev.filter(id => id !== categoriaId);
+      }
+      // Se não está selecionado e ainda não atingiu o limite, adiciona
+      else if (prev.length < 5) {
+        return [...prev, categoriaId];
+      }
+      // Se atingiu o limite, retorna sem alterações
+      return prev;
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -79,6 +110,11 @@ const CadastroUsuario = () => {
       return;
     }
 
+    if (interessesSelecionados.length === 0) {
+      setError('Selecione pelo menos 1 interesse');
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -86,7 +122,7 @@ const CadastroUsuario = () => {
       formDataToSend.append('email', formData.email);
       formDataToSend.append('telefone', formData.telefone);
       formDataToSend.append('senha', formData.senha);
-      formDataToSend.append('interesses', formData.interesses);
+      formDataToSend.append('interesses', interessesSelecionados.join(','));
       formDataToSend.append('tipo', tipoPessoa);
       
       if (formData.imagem) {
@@ -194,14 +230,29 @@ const CadastroUsuario = () => {
           </div>
 
           <div className={styles.formGroup}>
-            <label htmlFor="interesses">Interesses:</label>
-            <textarea
-              id="interesses"
-              name="interesses"
-              value={formData.interesses}
-              onChange={handleChange}
-              placeholder="Quais são seus principais interesses?"
-            />
+            <label>Interesses (selecione até 5):</label>
+            <div className={styles.interessesContainer}>
+              {categorias.map(categoria => (
+                <div key={categoria.id} className={styles.interesseItem}>
+                  <input
+                    type="checkbox"
+                    id={`interesse-${categoria.id}`}
+                    checked={interessesSelecionados.includes(categoria.id)}
+                    onChange={() => handleInteresseChange(categoria.id)}
+                    disabled={interessesSelecionados.length >= 5 && !interessesSelecionados.includes(categoria.id)}
+                  />
+                  <label 
+                    htmlFor={`interesse-${categoria.id}`} 
+                    className={`${styles.interesseLabel} ${interessesSelecionados.includes(categoria.id) ? styles.interesseSelecionado : ''}`}
+                  >
+                    {categoria.nome}
+                  </label>
+                </div>
+              ))}
+            </div>
+            <div className={styles.interesseContador}>
+              {interessesSelecionados.length} de 5 selecionados
+            </div>
           </div>
 
           <div className={styles.formGroup}>

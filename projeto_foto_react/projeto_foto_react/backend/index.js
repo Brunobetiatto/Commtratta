@@ -5,6 +5,7 @@ import path from "path";
 import userRoutes from "./routes/UserRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import contractRoutes from './routes/ContractRoutes.js';
+import categoriaRoutes from './routes/CategoriaRoutes.js';
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -16,7 +17,7 @@ app.use("/uploads", express.static(path.resolve("uploads")));
 app.use("/api/usuarios", userRoutes); // Atualizado para /api/usuarios
 app.use("/auth", authRoutes);
 app.use("/api/contracts", contractRoutes);
-
+app.use('/api/categorias', categoriaRoutes);
 // Testar conexão com o banco
 import db from "./db.js";
 

@@ -1,16 +1,23 @@
-/* Estilos para a Sidebar */
 .sidebar {
-  width: 280px;
-  background: white;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.03);
-  padding: 25px 20px;
+  width: 240px;
+  background: linear-gradient(180deg, #4361ee 0%, #3a56d4 100%);
+  padding: 20px 15px;
   display: flex;
   flex-direction: column;
-  z-index: 100;
+  height: calc(100vh - 60px); /* Altura considerando espaçamentos */
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  margin: 0px 25px 15px 20px; /* Espaçamentos: topo, direita, inferior, esquerda */
   position: fixed;
-  height: 100vh;
+  z-index: 100;
   transition: all 0.25s ease;
-  border-right: 1px solid #e2e8f0;
+  color: white;
+}
+
+.sidebarContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .profileContainer {
@@ -20,7 +27,7 @@
   text-align: center;
   padding: 20px 0;
   margin-bottom: 20px;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .profileImage {
@@ -28,46 +35,47 @@
   height: 80px;
   border-radius: 50%;
   object-fit: cover;
-  border: 1px solid #e2e8f0;
+  border: 2px solid rgba(255, 255, 255, 0.3);
   margin-bottom: 15px;
-  background-color: #f8f9fa;
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 .name {
   font-size: 18px;
   font-weight: 600;
   margin-bottom: 5px;
-  color: #2b2d42;
+  color: white;
 }
 
 .role {
-  color: #adb5bd;
+  color: rgba(255, 255, 255, 0.8);
   font-size: 14px;
   margin-bottom: 15px;
 }
 
 .descriptionContainer {
   padding: 20px 0;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  flex-grow: 1;
 }
 
 .description {
-  color: #495057;
+  color: rgba(255, 255, 255, 0.9);
   font-size: 14px;
   line-height: 1.6;
   text-align: center;
 }
 
 .sidebarFooter {
-  margin-top: auto;
   padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .logoutButton {
   width: 100%;
-  background: transparent;
-  border: 1px solid #e2e8f0;
-  color: #495057;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
   padding: 10px 15px;
   border-radius: 6px;
   cursor: pointer;
@@ -80,6 +88,28 @@
 }
 
 .logoutButton:hover {
-  background-color: #f8f9fa;
-  border-color: #adb5bd;
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Responsividade */
+@media (max-width: 1024px) {
+  .sidebar {
+    position: relative;
+    width: 100%;
+    height: auto;
+    margin: 0 0 20px 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  
+  .profileContainer {
+    flex-direction: row;
+    text-align: left;
+    gap: 15px;
+  }
+  
+  .profileImage {
+    margin-bottom: 0;
+  }
 }

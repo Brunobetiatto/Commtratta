@@ -29,26 +29,28 @@ const Sidebar = () => {
 
   return (
     <aside className={styles.sidebar}>
-      <div className={styles.profileContainer}>
-        <img 
-          src={getImageUrl()}
-          alt="Perfil" 
-          className={styles.profileImage}
-          onError={(e) => {
-            e.target.onerror = null;
-            e.target.src = '/default-profile.png';
-          }}
-        />
-        <div className={styles.profileInfo}>
-          <h3 className={styles.name}>{user.email.split('@')[0]}</h3>
-          <p className={styles.role}>{getUserType()}</p>
+      <div className={styles.sidebarContent}>
+        <div className={styles.profileContainer}>
+          <img 
+            src={getImageUrl()}
+            alt="Perfil" 
+            className={styles.profileImage}
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = '/default-profile.png';
+            }}
+          />
+          <div className={styles.profileInfo}>
+            <h3 className={styles.name}>{user.email.split('@')[0]}</h3>
+            <p className={styles.role}>{getUserType()}</p>
+          </div>
         </div>
-      </div>
-      
-      <div className={styles.descriptionContainer}>
-        <p className={styles.description}>
-          {user.interesses || 'Bem-vindo ao sistema de gerenciamento'}
-        </p>
+        
+        <div className={styles.descriptionContainer}>
+          <p className={styles.description}>
+            {user.interesses || 'Bem-vindo'}
+          </p>
+        </div>
       </div>
       
       <footer className={styles.sidebarFooter}>

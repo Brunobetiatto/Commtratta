@@ -1,4 +1,3 @@
-// frontend/App.jsx
 import React from 'react';
 import { useAuth } from './contexts/AuthContext';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
@@ -20,18 +19,32 @@ function App() {
     );
   }
 
-  // Se não estiver autenticado, redireciona para login
   if (!isAuthenticated) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   return (
     <div className={styles.appContainer}>
-      <Sidebar user={user} logout={logout} />
+      <div className={styles.sidebarContainer}>
+        <Sidebar user={user} logout={logout} />
+      </div>
       
       <div className={styles.mainContent}>
         <header className={styles.appHeader}>
-          <h1>Contratos</h1>
+          <div className={styles.headerLeft}>
+            <img 
+              src="/favicon.ico" 
+              alt="Favicon" 
+              className={styles.favicon}
+            />
+            <h1>Contratos</h1>
+          </div>
+          <div className={styles.userInfo}>
+            <span>{user.name}</span>
+            <button onClick={logout} className={styles.logoutBtn}>
+              Sair
+            </button>
+          </div>
         </header>
         
         <main className={styles.appMainContent}>

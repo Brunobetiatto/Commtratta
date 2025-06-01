@@ -55,7 +55,7 @@ CREATE TABLE contratos (
     titulo          VARCHAR(140) NOT NULL,
     descricao       TEXT,
     data_criacao    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    contrato_img    LONGBLOB,
+    contrato_img    VARCHAR(255),
     status          ENUM('CADASTRADO','ABERTO','ASSINADO','APROVADO')
                    NOT NULL DEFAULT 'CADASTRADO',
     data_validade   DATETIME,
@@ -68,6 +68,18 @@ CREATE TABLE contratos (
 CREATE TABLE categorias (
     id     BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     nome   VARCHAR(80) NOT NULL UNIQUE
+);
+
+CREATE TABLE contrato_categorias (
+    id_contrato BIGINT UNSIGNED NOT NULL,
+    id_categoria BIGINT UNSIGNED NOT NULL,
+    PRIMARY KEY (id_contrato, id_categoria),
+    CONSTRAINT fk_contratocat__contrato
+        FOREIGN KEY (id_contrato) REFERENCES contratos(id)
+        ON DELETE CASCADE,
+    CONSTRAINT fk_contratocat__categoria
+        FOREIGN KEY (id_categoria) REFERENCES categorias(id)
+        ON DELETE CASCADE
 );
 
 CREATE TABLE usuario_interesses (
@@ -149,7 +161,7 @@ INSERT INTO categorias (nome) VALUES
   ('Limpeza'), ('TI'), ('RH'), ('Marketing'), ('Logística');
 
 /* 2 ▸ Usuários */
-INSERT INTO usuarios (email, telefone, senha_hash, interesses) VALUES
+INSERT INTO usuarios (email, telefone, senha, interesses) VALUES
   ('alice@cliente.com'        , '+55-11-99999-9999',
    REPEAT('a',60), 'RH,Finanças'),
   ('bob@cliente.com'          , '+55-11-98888-8888',

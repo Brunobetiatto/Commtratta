@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styles from './Listagem.module.css';
 import { useAuth } from '../contexts/AuthContext';
+import axios from 'axios';
 
 const Listagem = ({ onAddContract }) => {
   const [contracts, setContracts] = useState([]);
@@ -11,16 +12,15 @@ const Listagem = ({ onAddContract }) => {
   useEffect(() => {
     const fetchOpenContracts = async () => {
       try {
-        const response = await fetch('http://localhost:8800/api/contracts/open');
-        const data = await response.json();
+        const response = await axios.get('http://localhost:8800/api/contratos/open');
         
-        if (response.ok) {
-          setContracts(data);
+        if (response.data) {
+          setContracts(response.data);
         } else {
-          setError(data.message || 'Erro ao carregar contratos');
+          setError('Erro ao carregar contratos');
         }
       } catch (err) {
-        setError('Falha na conexão com o servidor');
+        setError(err.response?.data?.message || 'Falha na conexão com o servidor');
       } finally {
         setLoading(false);
       }
@@ -31,24 +31,24 @@ const Listagem = ({ onAddContract }) => {
 
   const handleSignContract = async (contractId) => {
     try {
-      const response = await fetch(`http://localhost:8800/api/contracts/${contractId}/sign`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ userId: user.id }),
-      });
+      const response = await axios.post(
+        `http://localhost:8800/api/contratos/${contractId}/sign`,
+        { userId: user.id },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        }
+      );
 
-      if (response.ok) {
+      if (response.data) {
         // Atualizar a lista de contratos
         setContracts(contracts.filter(contract => contract.id !== contractId));
         alert('Contrato assinado com sucesso!');
-      } else {
-        const data = await response.json();
-        throw new Error(data.message || 'Erro ao assinar contrato');
       }
     } catch (err) {
-      setError(err.message);
+      setError(err.response?.data?.message || 'Erro ao assinar contrato');
     }
   };
 
@@ -62,15 +62,7 @@ const Listagem = ({ onAddContract }) => {
 
   return (
     <div className={styles.container}>
-      <div className={styles.header}>
-        <h2>Contratos Abertos</h2>
-        {user.tipo === 'PJ' && (
-          <button onClick={onAddContract} className={styles.addButton}>
-            Criar Novo Contrato
-          </button>
-        )}
-      </div>
-
+      
       <div className={styles.contractsGrid}>
         {contracts.length === 0 ? (
           <div className={styles.emptyState}>
@@ -92,7 +84,7 @@ const Listagem = ({ onAddContract }) => {
               <div className={styles.cardDetails}>
                 <div className={styles.detailItem}>
                   <i className="fas fa-building"></i>
-                  <span>{contract.fornecedor_nome}</span>
+                  <span>{contract.fornecedor_email}</span>
                 </div>
                 
                 <div className={styles.detailItem}>
@@ -110,14 +102,7 @@ const Listagem = ({ onAddContract }) => {
                 </div>
               </div>
               
-              {user.tipo === 'PF' && (
-                <button 
-                  onClick={() => handleSignContract(contract.id)} 
-                  className={styles.signButton}
-                >
-                  <i className="fas fa-signature"></i> Assinar Contrato
-                </button>
-              )}
+        
             </div>
           ))
         )}

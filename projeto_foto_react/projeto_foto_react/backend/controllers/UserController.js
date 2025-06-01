@@ -93,10 +93,25 @@ export const addUser = async (req, res) => {
 
 export const getUsers = async (req, res) => {
   try {
-    const [users] = await db.query('SELECT id, email, telefone, interesses, img FROM usuarios');
+    const [users] = await db.query(`
+      SELECT 
+        u.id, 
+        u.email, 
+        u.telefone, 
+        u.interesses, 
+        u.img,
+        CASE
+          WHEN pj.id IS NOT NULL THEN 'PJ'
+          WHEN pf.id IS NOT NULL THEN 'PF'
+          ELSE 'Unknown'
+        END AS tipo
+      FROM usuarios u
+      LEFT JOIN pessoa_juridica pj ON u.id = pj.id
+      LEFT JOIN pessoa_fisica pf ON u.id = pf.id
+    `);
     res.status(200).json(users);
   } catch (error) {
     console.error('Erro ao buscar usuários:', error);
     res.status(500).json({ message: 'Erro interno do servidor' });
   }
-}; 
+};

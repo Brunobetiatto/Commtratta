@@ -1,25 +1,20 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from './Sidebar.module.css';
 import { useAuth } from '../contexts/AuthContext';
 
 const Sidebar = () => {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
   if (!user) return null;
 
-  const getUserType = () => {
-    if (user.tipo === 'PJ') return 'Fornecedor';
-    if (user.tipo === 'PF') return 'Cliente';
-    return 'Usuário';
-  };
+ 
 
-  // Função para construir a URL correta da imagem
   const getImageUrl = () => {
     if (!user.img) return '/default-profile.png';
     
-    // Se a imagem já vem com o caminho /uploads da API
     if (user.img.includes('uploads')) {
-      // Extrai apenas o nome do arquivo
       const filename = user.img.split('/').pop();
       return `http://localhost:8800/uploads/${filename}`;
     }
@@ -42,7 +37,6 @@ const Sidebar = () => {
           />
           <div className={styles.profileInfo}>
             <h3 className={styles.name}>{user.email.split('@')[0]}</h3>
-            <p className={styles.role}>{getUserType()}</p>
           </div>
         </div>
         
@@ -51,6 +45,19 @@ const Sidebar = () => {
             {user.interesses || 'Bem-vindo'}
           </p>
         </div>
+
+        {/* Botão visível apenas para PJ */}
+        {user.tipo_usuario === "PJ" && (
+          <div className={styles.menuSection}>
+            <button 
+              className={styles.menuButton}
+              onClick={() => navigate('/cadastrar-contrato')}
+            >
+              <i className="fas fa-file-contract"></i>
+              Cadastrar Contrato
+            </button>
+          </div>
+        )}
       </div>
       
       <footer className={styles.sidebarFooter}>

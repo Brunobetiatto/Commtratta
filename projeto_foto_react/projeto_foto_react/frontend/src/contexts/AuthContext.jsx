@@ -1,5 +1,5 @@
-// src/contexts/AuthContext.jsx
 import React, { createContext, useState, useContext, useEffect } from 'react';
+import api from '../services/api.js'; // Importe sua instância do axios configurada
 
 const AuthContext = createContext();
 
@@ -9,36 +9,49 @@ export const AuthProvider = ({ children }) => {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    const storedUser = localStorage.getItem('user');
-    
-    if (token && storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-    setLoading(false);
+    const initializeAuth = async () => {
+      const token = localStorage.getItem('token');
+      const storedUser = localStorage.getItem('user');
+      
+      if (token && storedUser) {
+        try {
+          // Verificar se o token ainda é válido
+          await api.get('/auth/validate', {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          
+          setUser(JSON.parse(storedUser));
+        } catch (err) {
+          // Token inválido ou expirado - fazer logout
+          logout();
+        }
+      }
+      setLoading(false);
+    };
+
+    initializeAuth();
   }, []);
 
   const login = async (email, password) => {
     try {
-      const response = await fetch('http://localhost:8800/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, senha: password }),
+      const response = await api.post('/auth/login', {
+        email,
+        senha: password
       });
 
-      const data = await response.json();
+      const { token, user } = response.data;
       
-      if (!response.ok) {
-        throw new Error(data.error || 'Erro ao fazer login');
-      }
-
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user));
-      setUser(data.user);
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(user));
+      setUser(user);
       setError('');
-      return data.user;
+      
+      // Configura o token no axios para as próximas requisições
+      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      
+      return user;
     } catch (err) {
-      setError('Email ou senha incorretos');
+      setError(err.response?.data?.error || 'Email ou senha incorretos');
       throw err;
     }
   };
@@ -46,6 +59,7 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    delete api.defaults.headers.common['Authorization'];
     setUser(null);
   };
 

@@ -12,6 +12,7 @@ export const getContratosAbertos = async (req, res) => {
         c.data_criacao, 
         c.data_validade, 
         c.status,
+        c.contrato_img,
         u.email AS fornecedor_email,
         pj.cnpj AS fornecedor_cnpj
       FROM contratos c

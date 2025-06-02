@@ -1,14 +1,19 @@
 import express from 'express';
-import { login, verifyToken } from '../controllers/authController.js';
+import { login, verifyToken, validateToken } from '../controllers/authController.js';
 
 const router = express.Router();
 
-// Rota de login
+// Rota de login (publica)
 router.post('/login', login);
 
-// Rota protegida de exemplo
+// Rota que apenas verifica o token (retorna 200 se válido, 401 se não for)
+router.get('/validate', verifyToken, validateToken);
+
+// Você pode ter outras rotas protegidas aqui, por exemplo:
+/*
 router.get('/protected', verifyToken, (req, res) => {
   res.json({ message: 'Acesso permitido', user: req.user });
 });
+*/
 
 export default router;

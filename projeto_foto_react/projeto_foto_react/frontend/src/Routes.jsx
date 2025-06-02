@@ -1,18 +1,38 @@
-// frontend/Routes.jsx
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { useAuth } from './contexts/AuthContext';
 import App from './App';
 import LoginScreen from './components/LoginScreen';
 import CadastroUsuario from './components/CadastroUsuario';
-import CadastrarContrato from './components/CadastroContrato'; 
+import CadastroContrato from './components/CadastroContrato';
 
 const AppRoutes = () => {
+  const { isAuthenticated, loading } = useAuth();
+
+  if (loading) {
+    // Se ainda estamos validando token, exibimos algo simples (você pode ter um Loader global)
+    return <div>Carregando...</div>;
+  }
+
   return (
     <Routes>
-      <Route path="/" element={<App />} />
+      {/* Se não estiver autenticado, redireciona ao login */}
+      <Route
+        path="/"
+        element={
+          isAuthenticated ? <App /> : <Navigate to="/login" replace />
+        }
+      />
       <Route path="/login" element={<LoginScreen />} />
       <Route path="/cadastro" element={<CadastroUsuario />} />
-      <Route path="/cadastrar-contrato" element={<CadastrarContrato />} />
+
+      {/* Rota protegida para cadastro de contrato */}
+      <Route
+        path="/cadastrar-contrato"
+        element={
+          isAuthenticated ? <CadastroContrato /> : <Navigate to="/login" replace />
+        }
+      />
     </Routes>
   );
 };

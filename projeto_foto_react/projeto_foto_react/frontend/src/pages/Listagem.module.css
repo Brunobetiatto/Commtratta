@@ -1,172 +1,225 @@
 .container {
   max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
+  margin: 0 10px;
+  padding: 0; /* Apenas padding vertical, horizontal é zero para alinhar à esquerda */
+  min-height: 80vh;
 }
 
 .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 30px;
+  margin-bottom: 2.5rem;
 }
 
-.addButton {
-  background-color: #4361ee;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 16px;
-  font-weight: 500;
-  transition: background-color 0.3s;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.header h1 {
+  font-size: 2rem;
+  color: #2d3748;
+  margin: 0;
+  font-weight: 700;
+  padding-left: 1rem; /* Alinha o título à esquerda, junto com os cards */
 }
 
-.addButton:hover {
-  background-color: #3a56d4;
-}
-
-.contractsGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 25px;
-}
-
-.contractCard {
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-  padding: 25px;
+.contractsList {
   display: flex;
   flex-direction: column;
-  transition: transform 0.3s, box-shadow 0.3s;
-  border: 1px solid #eaeaea;
-  height: 100%;
+  gap: 1.5rem;
 }
 
+/* ====== CARD ====== */
+.contractCard {
+  position: relative;
+  width: 100%;
+  height: 200px; /* Altura fixa para manter aspecto uniforme */
+  border-radius: 12px;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Hover: levanta e intensifica a sombra */
 .contractCard:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
-.cardHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 15px;
+/* Overlay semitransparente para contraste */
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.35);
+  transition: background 0.3s ease;
 }
 
-.cardHeader h3 {
-  margin: 0;
-  font-size: 18px;
-  color: #2b2d42;
-  flex: 1;
+.contractCard:hover .overlay {
+  background: rgba(0, 0, 0, 0.45);
 }
 
-.status {
-  font-size: 12px;
+/* ====== STATUS TAG ====== */
+.tag {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 2;
+  display: inline-block;
+  font-size: 0.75rem;
   font-weight: 600;
-  padding: 4px 10px;
-  border-radius: 20px;
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.25rem;
+  color: white;
   text-transform: uppercase;
 }
 
-.status.aberto {
-  background-color: #e6f4ff;
-  color: #1890ff;
+/* Cores específicas para cada status */
+.tagCadastrado {
+  background-color: #6b7280; /* cinza escuro */
+}
+.tagAberto {
+  background-color: #18b200; /* verde */
+}
+.tagAssinado {
+  background-color: #007bff; /* azul */
+}
+.tagAprovado {
+  background-color: #ff8c00; /* laranja */
 }
 
-.status.cadastrado {
-  background-color: #f0f0f0;
-  color: #595959;
+/* ====== TÍTULO DO CARD ====== */
+.cardTitle {
+  position: absolute;
+  top: 2.5rem; /* Abaixo da tag */
+  left: 1rem;
+  z-index: 2;
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: white;
+  max-width: 80%;
+  white-space: nowrap;       /* Não permitir quebra de linha */
+  overflow: hidden;
+  text-overflow: ellipsis;   /* Reticências se o título for maior que o espaço */
 }
 
-.status.assinado {
-  background-color: #e6f7ff;
-  color: #13c2c2;
-}
-
-.status.aprovado {
-  background-color: #f6ffed;
-  color: #52c41a;
-}
-
-.description {
-  color: #595959;
-  font-size: 14px;
-  line-height: 1.5;
-  margin-bottom: 20px;
-  flex-grow: 1;
-}
-
-.cardDetails {
+/* ====== RODAPÉ DO CARD: DATAS + DESCRIÇÃO ====== */
+.cardFooter {
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
+  z-index: 2;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-bottom: 20px;
+  gap: 0.25rem;
+  max-width: 60%;
 }
 
-.detailItem {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 14px;
-  color: #595959;
+/* “Publicado em: DD/MM/AAAA” */
+.fechaCriacao {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #e2e8f0;
 }
 
-.detailItem i {
-  width: 20px;
-  color: #4361ee;
+/* “Válido até: DD/MM/AAAA” */
+.fechaValidade {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #e2e8f0;
 }
 
-.signButton {
-  background-color: #4cc9f0;
-  color: white;
-  border: none;
-  padding: 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 500;
-  transition: background-color 0.3s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  margin-top: auto;
+/* Trecho da descrição (até 80 caracteres) */
+.servicoDescription {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #e2e8f0;
+  line-height: 1.2rem;
 }
 
-.signButton:hover {
-  background-color: #3aa8c9;
-}
-
+/* ====== EMPTY STATE ====== */
 .emptyState {
-  grid-column: 1 / -1;
   text-align: center;
-  padding: 50px 20px;
-  color: #8c8c8c;
+  padding: 3rem 2rem;
+  background: #f8fafc;
+  border-radius: 1rem;
+  border: 2px dashed #cbd5e1;
 }
 
 .emptyState i {
-  font-size: 48px;
-  margin-bottom: 20px;
-  color: #d9d9d9;
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  color: #94a3b8;
 }
 
-.loading {
-  text-align: center;
-  padding: 40px;
-  font-size: 16px;
-  color: #595959;
+.emptyState h3 {
+  font-size: 1.5rem;
+  color: #334155;
+  margin-bottom: 0.5rem;
 }
 
-.error {
+.emptyState p {
+  color: #64748b;
+  margin: 0;
+}
+
+/* ====== LOADING ====== */
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 50vh;
+  gap: 1rem;
+}
+
+.spinner {
+  width: 3rem;
+  height: 3rem;
+  border: 4px solid #e2e8f0;
+  border-top: 4px solid #4361ee;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ====== ERROR ====== */
+.errorContainer {
   text-align: center;
-  padding: 40px;
-  color: #e63946;
-  background-color: #fff2f0;
-  border-radius: 8px;
+  padding: 2rem;
+  background: #fff5f5;
+  border-radius: 0.75rem;
+  max-width: 600px;
+  margin: 2rem auto;
+  border: 1px solid #fed7d7;
+}
+
+.errorContainer i {
+  font-size: 2.5rem;
+  color: #e53e3e;
+  margin-bottom: 1rem;
+}
+
+.errorContainer p {
+  color: #e53e3e;
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+}
+
+.retryButton {
+  background: #e53e3e;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s;
+}
+
+.retryButton:hover {
+  background: #c53030;
 }

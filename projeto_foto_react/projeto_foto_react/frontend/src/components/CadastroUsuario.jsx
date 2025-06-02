@@ -1,8 +1,8 @@
-// frontend/components/CadastroUsuario.jsx
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import styles from './CadastroUsuario.module.css';
+import { FiSearch, FiX, FiChevronDown, FiChevronUp } from 'react-icons/fi';
 
 const CadastroUsuario = () => {
   const navigate = useNavigate();
@@ -23,6 +23,9 @@ const CadastroUsuario = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imagemPreview, setImagemPreview] = useState(null);
   const fileInputRef = useRef(null);
+  const [filtroInteresses, setFiltroInteresses] = useState('');
+  const [interessesExpandidos, setInteressesExpandidos] = useState(false);
+  const interessesContainerRef = useRef(null);
 
   // Buscar categorias do backend
   useEffect(() => {
@@ -72,17 +75,22 @@ const CadastroUsuario = () => {
 
   const handleInteresseChange = (categoriaId) => {
     setInteressesSelecionados(prev => {
-      // Se já está selecionado, remove
       if (prev.includes(categoriaId)) {
         return prev.filter(id => id !== categoriaId);
       }
-      // Se não está selecionado e ainda não atingiu o limite, adiciona
       else if (prev.length < 5) {
         return [...prev, categoriaId];
       }
-      // Se atingiu o limite, retorna sem alterações
       return prev;
     });
+  };
+
+  const limparFiltro = () => {
+    setFiltroInteresses('');
+  };
+
+  const toggleExpandirInteresses = () => {
+    setInteressesExpandidos(!interessesExpandidos);
   };
 
   const handleSubmit = async (e) => {
@@ -154,6 +162,18 @@ const CadastroUsuario = () => {
       setIsSubmitting(false);
     }
   };
+
+  // Filtrar categorias baseado no termo de busca
+  const categoriasFiltradas = categorias.filter(categoria => 
+    categoria.nome.toLowerCase().includes(filtroInteresses.toLowerCase())
+  );
+
+  // Efeito para rolar para baixo quando expandido
+  useEffect(() => {
+    if (interessesExpandidos && interessesContainerRef.current) {
+      interessesContainerRef.current.scrollTop = 0;
+    }
+  }, [interessesExpandidos]);
 
   return (
     <div className={styles.cadastroContainer}>
@@ -231,27 +251,93 @@ const CadastroUsuario = () => {
 
           <div className={styles.formGroup}>
             <label>Interesses (selecione até 5):</label>
-            <div className={styles.interessesContainer}>
-              {categorias.map(categoria => (
-                <div key={categoria.id} className={styles.interesseItem}>
+            
+            <div className={styles.interessesWrapper}>
+              <div className={styles.interessesHeader}>
+                <div className={styles.buscaContainer}>
+                  <FiSearch className={styles.searchIcon} />
                   <input
-                    type="checkbox"
-                    id={`interesse-${categoria.id}`}
-                    checked={interessesSelecionados.includes(categoria.id)}
-                    onChange={() => handleInteresseChange(categoria.id)}
-                    disabled={interessesSelecionados.length >= 5 && !interessesSelecionados.includes(categoria.id)}
+                    type="text"
+                    placeholder="Buscar interesses..."
+                    value={filtroInteresses}
+                    onChange={(e) => setFiltroInteresses(e.target.value)}
+                    className={styles.buscaInput}
                   />
-                  <label 
-                    htmlFor={`interesse-${categoria.id}`} 
-                    className={`${styles.interesseLabel} ${interessesSelecionados.includes(categoria.id) ? styles.interesseSelecionado : ''}`}
-                  >
-                    {categoria.nome}
-                  </label>
+                  {filtroInteresses && (
+                    <button 
+                      type="button" 
+                      onClick={limparFiltro}
+                      className={styles.limparBotao}
+                    >
+                      <FiX />
+                    </button>
+                  )}
                 </div>
-              ))}
-            </div>
-            <div className={styles.interesseContador}>
-              {interessesSelecionados.length} de 5 selecionados
+                
+                <button
+                  type="button"
+                  onClick={toggleExpandirInteresses}
+                  className={styles.expandirBotao}
+                >
+                  {interessesExpandidos ? <FiChevronUp /> : <FiChevronDown />}
+                </button>
+              </div>
+              
+              <div 
+                ref={interessesContainerRef}
+                className={`${styles.interessesContainer} ${interessesExpandidos ? styles.expandido : ''}`}
+              >
+                {categoriasFiltradas.length === 0 ? (
+                  <div className={styles.semResultados}>
+                    Nenhum interesse encontrado para "{filtroInteresses}"
+                  </div>
+                ) : (
+                  categoriasFiltradas.map(categoria => (
+                    <div key={categoria.id} className={styles.interesseItem}>
+                      <input
+                        type="checkbox"
+                        id={`interesse-${categoria.id}`}
+                        checked={interessesSelecionados.includes(categoria.id)}
+                        onChange={() => handleInteresseChange(categoria.id)}
+                        disabled={interessesSelecionados.length >= 5 && !interessesSelecionados.includes(categoria.id)}
+                        className={styles.interesseCheckbox}
+                      />
+                      <label 
+                        htmlFor={`interesse-${categoria.id}`} 
+                        className={`${styles.interesseLabel} ${interessesSelecionados.includes(categoria.id) ? styles.interesseSelecionado : ''} ${interessesSelecionados.length >= 5 && !interessesSelecionados.includes(categoria.id) ? styles.interesseDesabilitado : ''}`}
+                      >
+                        {categoria.nome}
+                      </label>
+                    </div>
+                  ))
+                )}
+              </div>
+              
+              <div className={styles.interessesFooter}>
+                <div className={styles.interesseContador}>
+                  {interessesSelecionados.length} de 5 selecionados
+                </div>
+                
+                {interessesSelecionados.length > 0 && (
+                  <div className={styles.interessesSelecionadosPreview}>
+                    {categorias
+                      .filter(cat => interessesSelecionados.includes(cat.id))
+                      .map(cat => (
+                        <span key={cat.id} className={styles.interesseTag}>
+                          {cat.nome}
+                          <button 
+                            type="button" 
+                            className={styles.removerTag}
+                            onClick={() => handleInteresseChange(cat.id)}
+                          >
+                            <FiX size={12} />
+                          </button>
+                        </span>
+                      ))
+                    }
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 

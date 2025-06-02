@@ -140,7 +140,7 @@ html, body, #root {
   background: white;
   border-radius: var(--border-radius);
   box-shadow: var(--shadow);
-  padding: 30px;
+  padding: 30px 30px 30px 0;
   border: var(--border);
   overflow-y: auto;
   max-height: calc(100vh - 250px);

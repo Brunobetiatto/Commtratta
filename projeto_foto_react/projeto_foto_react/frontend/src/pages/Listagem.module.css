@@ -1,7 +1,7 @@
 .container {
   max-width: 1200px;
   margin: 0 10px;
-  padding: 0; /* Apenas padding vertical, horizontal é zero para alinhar à esquerda */
+  padding: 0; 
   min-height: 80vh;
 }
 
@@ -27,7 +27,7 @@
 .contractCard {
   position: relative;
   width: 100%;
-  height: 200px; /* Altura fixa para manter aspecto uniforme */
+  height: 200px; 
   border-radius: 12px;
   overflow: hidden;
   background-size: cover;
@@ -61,7 +61,7 @@
 .tag {
   position: absolute;
   top: 1rem;
-  left: 1rem;
+  right: 1rem;
   z-index: 2;
   display: inline-block;
   font-size: 0.75rem;
@@ -89,7 +89,7 @@
 /* ====== TÍTULO DO CARD ====== */
 .cardTitle {
   position: absolute;
-  top: 2.5rem; /* Abaixo da tag */
+  top: 1.0rem; 
   left: 1rem;
   z-index: 2;
   margin: 0;

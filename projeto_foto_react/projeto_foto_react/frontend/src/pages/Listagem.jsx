@@ -127,14 +127,6 @@ const Listagem = () => {
 
               {/* RODAPÉ COM DATAS E DESCRIÇÃO (até 80 chars) */}
               <div className={styles.cardFooter}>
-                <p className={styles.fechaCriacao}>
-                  Publicado em: {formatDate(contract.data_criacao)}
-                </p>
-                {contract.data_validade && (
-                  <p className={styles.fechaValidade}>
-                    Válido até: {formatDate(contract.data_validade)}
-                  </p>
-                )}
                 {contract.descricao && (
                   <p className={styles.servicoDescription}>
                     {contract.descricao.length > 80
@@ -142,6 +134,9 @@ const Listagem = () => {
                       : contract.descricao}
                   </p>
                 )}
+                <p className={styles.fechaCriacao}>
+                  Publicado em: {formatDate(contract.data_criacao)}
+                </p>
               </div>
             </div>
           ))

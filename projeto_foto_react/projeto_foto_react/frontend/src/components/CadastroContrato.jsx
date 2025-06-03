@@ -12,34 +12,31 @@ const CadastrarContrato = () => {
     titulo: '',
     descricao: '',
     dataValidade: '',
-    imagem: null,
   });
   const [categorias, setCategorias] = useState([]);
   const [categoriasSelecionadas, setCategoriasSelecionadas] = useState([]);
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [imagemPreview, setImagemPreview] = useState(null);
-  const fileInputRef = useRef(null);
+  const [imagem, setImagem] = useState(null);
+  const [preview, setPreview] = useState(null);
   const [filtroCategorias, setFiltroCategorias] = useState('');
   const [categoriasExpandidas, setCategoriasExpandidas] = useState(false);
   const categoriasContainerRef = useRef(null);
 
-  // Verificar autenticação e tipo de usuário
   useEffect(() => {
     if (!isAuthenticated || user?.tipo_usuario !== 'PJ') {
       navigate('/');
     }
   }, [isAuthenticated, user, navigate]);
 
-  // Carregar categorias disponíveis
   useEffect(() => {
     const fetchCategorias = async () => {
       try {
         const response = await api.get('/categorias');
         setCategorias(response.data);
       } catch (err) {
-        console.error('Erro ao buscar categorias:', err);
         setError('Erro ao carregar categorias. Tente recarregar a página.');
+        console.error("Erro ao buscar categorias:", err);
       }
     };
 
@@ -48,71 +45,48 @@ const CadastrarContrato = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleFileChange = (e) => {
+  const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setFormData(prev => ({
-        ...prev,
-        imagem: file
-      }));
-
-      // Criar preview da imagem
+      setImagem(file);
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagemPreview(reader.result);
-      };
+      reader.onloadend = () => setPreview(reader.result);
       reader.readAsDataURL(file);
     } else {
-      setImagemPreview(null);
+      setImagem(null);
+      setPreview(null);
     }
   };
 
   const handleCategoriaChange = (categoriaId) => {
-    setCategoriasSelecionadas(prev => 
-      prev.includes(categoriaId) 
-        ? prev.filter(id => id !== categoriaId) 
+    setCategoriasSelecionadas(prev =>
+      prev.includes(categoriaId)
+        ? prev.filter(id => id !== categoriaId)
         : [...prev, categoriaId]
     );
   };
 
-  const limparFiltro = () => {
-    setFiltroCategorias('');
-  };
-
-  const toggleExpandirCategorias = () => {
-    setCategoriasExpandidas(!categoriasExpandidas);
-  };
+  const limparFiltro = () => setFiltroCategorias('');
+  const toggleExpandirCategorias = () => setCategoriasExpandidas(!categoriasExpandidas);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
+    if (!formData.titulo.trim()) return setError('Título é obrigatório');
+    if (!formData.descricao.trim()) return setError('Descrição é obrigatória');
+    if (!formData.dataValidade) return setError('Data de validade é obrigatória');
     
-    // Validações
-    if (!formData.titulo.trim()) {
-      setError('Título é obrigatório');
-      return;
+    const dataValidadeObj = new Date(formData.dataValidade);
+    const hoje = new Date();
+    hoje.setHours(0,0,0,0); // Normalizar para comparar apenas a data
+    if (dataValidadeObj <= hoje) {
+        return setError('Data de validade deve ser futura.');
     }
-    
-    if (!formData.descricao.trim()) {
-      setError('Descrição é obrigatória');
-      return;
-    }
-    
-    if (!formData.dataValidade) {
-      setError('Data de validade é obrigatória');
-      return;
-    }
-    
-    if (categoriasSelecionadas.length === 0) {
-      setError('Selecione pelo menos uma categoria');
-      return;
-    }
+    if (categoriasSelecionadas.length === 0) return setError('Selecione pelo menos uma categoria');
 
     setIsSubmitting(true);
 
@@ -122,15 +96,13 @@ const CadastrarContrato = () => {
       formDataToSend.append('descricao', formData.descricao);
       formDataToSend.append('dataValidade', formData.dataValidade);
       formDataToSend.append('categorias', JSON.stringify(categoriasSelecionadas));
-      
-      if (formData.imagem) {
-        formDataToSend.append('imagem', formData.imagem);
+      if (imagem) formDataToSend.append('imagem', imagem);
+      if (user?.id) {
+        formDataToSend.append('empresa_id', user.id); // Ajuste 'empresa_id' conforme seu backend
       }
 
       const response = await api.post('/contratos', formDataToSend, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
+        headers: { 'Content-Type': 'multipart/form-data' }
       });
 
       if (response.status === 201) {
@@ -138,19 +110,17 @@ const CadastrarContrato = () => {
         navigate('/');
       }
     } catch (err) {
-      console.error('Erro ao cadastrar contrato:', err);
-      setError(err.response?.data?.error || 'Erro ao cadastrar contrato');
+      setError(err.response?.data?.message || err.response?.data?.error || 'Erro ao cadastrar contrato. Verifique os dados e tente novamente.');
+      console.error("Erro ao cadastrar contrato:", err.response || err);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // Filtrar categorias baseado no termo de busca
-  const categoriasFiltradas = categorias.filter(categoria => 
+  const categoriasFiltradas = categorias.filter(categoria =>
     categoria.nome.toLowerCase().includes(filtroCategorias.toLowerCase())
   );
 
-  // Efeito para rolar para baixo quando expandido
   useEffect(() => {
     if (categoriasExpandidas && categoriasContainerRef.current) {
       categoriasContainerRef.current.scrollTop = 0;
@@ -158,17 +128,17 @@ const CadastrarContrato = () => {
   }, [categoriasExpandidas]);
 
   if (!isAuthenticated || user?.tipo_usuario !== 'PJ') {
-    return null; // Ou redirecionar para uma página de não autorizado
+    return null; // Ou um componente de carregamento/acesso negado
   }
 
   return (
-    <div className={styles.cadastroContainer}>
-      <div className={styles.cadastroCard}>
-        <h2>Cadastrar Novo Contrato</h2>
-        
-        {error && <div className={styles.errorMessage}>{error}</div>}
+    <div className={styles.container}>
+      <div className={styles.card}>
+        <h2 className={styles.title}>Cadastrar Novo Contrato</h2>
 
-        <form onSubmit={handleSubmit} className={styles.cadastroForm}>
+        {error && <div className={styles.error}>{error}</div>}
+
+        <form onSubmit={handleSubmit} className={styles.form} noValidate>
           <div className={styles.formGroup}>
             <label htmlFor="titulo">Título *</label>
             <input
@@ -179,6 +149,7 @@ const CadastrarContrato = () => {
               onChange={handleChange}
               required
               maxLength={140}
+              className={styles.input}
             />
           </div>
 
@@ -191,6 +162,7 @@ const CadastrarContrato = () => {
               onChange={handleChange}
               required
               rows={5}
+              className={styles.textarea}
             />
           </div>
 
@@ -203,12 +175,13 @@ const CadastrarContrato = () => {
               value={formData.dataValidade}
               onChange={handleChange}
               required
+              min={new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().split("T")[0]} // Data mínima é amanhã
+              className={styles.input}
             />
           </div>
 
           <div className={styles.formGroup}>
             <label>Categorias *</label>
-            
             <div className={styles.categoriasWrapper}>
               <div className={styles.categoriasHeader}>
                 <div className={styles.buscaContainer}>
@@ -221,59 +194,65 @@ const CadastrarContrato = () => {
                     className={styles.buscaInput}
                   />
                   {filtroCategorias && (
-                    <button 
-                      type="button" 
+                    <button
+                      type="button"
                       onClick={limparFiltro}
                       className={styles.limparBotao}
+                      aria-label="Limpar filtro de categorias"
                     >
                       <FiX />
                     </button>
                   )}
                 </div>
-                
                 <button
                   type="button"
                   onClick={toggleExpandirCategorias}
                   className={styles.expandirBotao}
+                  aria-expanded={categoriasExpandidas}
+                  aria-label={categoriasExpandidas ? "Recolher categorias" : "Expandir categorias"}
                 >
                   {categoriasExpandidas ? <FiChevronUp /> : <FiChevronDown />}
                 </button>
               </div>
-              
-              <div 
+
+              <div
                 ref={categoriasContainerRef}
                 className={`${styles.categoriasContainer} ${categoriasExpandidas ? styles.expandido : ''}`}
               >
-                {categoriasFiltradas.length === 0 ? (
+                {categorias.length === 0 && !error && <div className={styles.semResultados}>Carregando categorias...</div>}
+                {categorias.length > 0 && categoriasFiltradas.length === 0 && filtroCategorias && (
                   <div className={styles.semResultados}>
                     Nenhuma categoria encontrada para "{filtroCategorias}"
                   </div>
-                ) : (
-                  categoriasFiltradas.map(categoria => (
-                    <div key={categoria.id} className={styles.categoriaItem}>
-                      <input
-                        type="checkbox"
-                        id={`categoria-${categoria.id}`}
-                        checked={categoriasSelecionadas.includes(categoria.id)}
-                        onChange={() => handleCategoriaChange(categoria.id)}
-                        className={styles.categoriaCheckbox}
-                      />
-                      <label 
-                        htmlFor={`categoria-${categoria.id}`} 
-                        className={`${styles.categoriaLabel} ${categoriasSelecionadas.includes(categoria.id) ? styles.categoriaSelecionada : ''}`}
-                      >
-                        {categoria.nome}
-                      </label>
-                    </div>
-                  ))
                 )}
+                 {categorias.length > 0 && categoriasFiltradas.length === 0 && !filtroCategorias && (
+                  <div className={styles.semResultados}>
+                    Nenhuma categoria disponível.
+                  </div>
+                )}
+                {categoriasFiltradas.map(categoria => (
+                  <div key={categoria.id} className={styles.categoriaItem}>
+                    <input
+                      type="checkbox"
+                      id={`categoria-${categoria.id}`}
+                      checked={categoriasSelecionadas.includes(categoria.id)}
+                      onChange={() => handleCategoriaChange(categoria.id)}
+                      className={styles.categoriaCheckbox}
+                    />
+                    <label
+                      htmlFor={`categoria-${categoria.id}`}
+                      className={`${styles.categoriaLabel} ${categoriasSelecionadas.includes(categoria.id) ? styles.categoriaSelecionada : ''}`}
+                    >
+                      {categoria.nome}
+                    </label>
+                  </div>
+                ))}
               </div>
-              
+
               <div className={styles.categoriasFooter}>
                 <div className={styles.categoriaContador}>
                   {categoriasSelecionadas.length} selecionada(s)
                 </div>
-                
                 {categoriasSelecionadas.length > 0 && (
                   <div className={styles.categoriasSelecionadasPreview}>
                     {categorias
@@ -281,16 +260,16 @@ const CadastrarContrato = () => {
                       .map(cat => (
                         <span key={cat.id} className={styles.categoriaTag}>
                           {cat.nome}
-                          <button 
-                            type="button" 
+                          <button
+                            type="button"
                             className={styles.removerTag}
                             onClick={() => handleCategoriaChange(cat.id)}
+                            aria-label={`Remover categoria ${cat.nome}`}
                           >
                             <FiX size={12} />
                           </button>
                         </span>
-                      ))
-                    }
+                      ))}
                   </div>
                 )}
               </div>
@@ -298,34 +277,42 @@ const CadastrarContrato = () => {
           </div>
 
           <div className={styles.formGroup}>
-            <label>Imagem do Contrato (opcional):</label>
-            
-            {/* Pré-visualização da imagem */}
-            {imagemPreview && (
-              <div className={styles.imagemPreviewContainer}>
-                <img 
-                  src={imagemPreview} 
-                  alt="Preview" 
-                  className={styles.imagemPreview} 
-                />
-              </div>
-            )}
-            
-            <label className={styles.uploadButton}>
-              {formData.imagem ? 'Alterar Imagem' : 'Selecionar Imagem'}
+            <label htmlFor="imagem" className={styles.imageUploadLabel}>Imagem do Contrato (opcional)</label>
+            <div className={styles.imageUpload}>
+              <label htmlFor="imagem" className={styles.uploadArea}>
+                {preview ? (
+                  <img src={preview} alt="Preview do contrato" className={styles.preview} />
+                ) : (
+                  <div className={styles.uploadPlaceholder}>
+                    <span>Selecionar Imagem</span>
+                  </div>
+                )}
+              </label>
               <input
                 type="file"
-                ref={fileInputRef}
-                onChange={handleFileChange}
+                id="imagem"
+                name="imagem"
                 accept="image/*"
-                style={{ display: 'none' }}
+                onChange={handleImageChange}
+                className={styles.fileInput}
               />
-            </label>
-            {formData.imagem && (
-              <p style={{ textAlign: 'center', marginTop: '0.5rem', fontSize: '0.8rem' }}>
-                {formData.imagem.name}
-              </p>
-            )}
+              {preview && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPreview(null);
+                    setImagem(null);
+                    const fileInput = document.getElementById('imagem');
+                    if (fileInput) {
+                      fileInput.value = "";
+                    }
+                  }}
+                  className={styles.removeImageButton}
+                >
+                  Remover Imagem
+                </button>
+              )}
+            </div>
           </div>
 
           <button

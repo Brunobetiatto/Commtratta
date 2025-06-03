@@ -1,4 +1,4 @@
-.container {
+.cadastroContainer {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -7,7 +7,7 @@
   padding: 20px;
 }
 
-.card {
+.cadastroCard {
   background: white;
   border-radius: 10px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
@@ -16,7 +16,7 @@
   max-width: 600px;
 }
 
-.title {
+.cadastroCard h2 {
   font-size: 24px;
   font-weight: 600;
   color: #2b2d42;
@@ -24,16 +24,17 @@
   text-align: center;
 }
 
-.error {
+.errorMessage {
   background-color: #fff2f0;
   color: #e63946;
   padding: 12px 15px;
   border-radius: 6px;
   margin-bottom: 20px;
   font-size: 14px;
+  text-align: center;
 }
 
-.form {
+.cadastroForm {
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -51,7 +52,9 @@
   color: #495057;
 }
 
-.input, .textarea {
+.formGroup input,
+.formGroup textarea,
+.formGroup select {
   padding: 12px 15px;
   border: 1px solid #e2e8f0;
   border-radius: 6px;
@@ -59,24 +62,177 @@
   transition: all 0.2s;
 }
 
-.input:focus, .textarea:focus {
+.formGroup input:focus,
+.formGroup textarea:focus,
+.formGroup select:focus {
   outline: none;
   border-color: #4361ee;
   box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
 }
 
-.textarea {
+.formGroup textarea {
   resize: vertical;
   min-height: 80px;
 }
 
-.imageUpload {
+/* Área de Categorias */
+.categoriasWrapper {
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 15px;
+  background-color: #f8fafc;
+}
+
+.categoriasHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.buscaContainer {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 12px;
+  color: #a0aec0;
+}
+
+.buscaInput {
+  width: 100%;
+  padding: 10px 10px 10px 40px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.limparBotao {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  color: #a0aec0;
+  cursor: pointer;
+  padding: 5px;
+}
+
+.expandirBotao {
+  background: none;
+  border: none;
+  color: #4a5568;
+  cursor: pointer;
+  padding: 5px;
+}
+
+.categoriasContainer {
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 10px;
+  background-color: white;
+}
+
+.categoriasContainer.expandido {
+  max-height: 300px;
+}
+
+.semResultados {
+  padding: 10px;
+  text-align: center;
+  color: #a0aec0;
+  font-size: 14px;
+}
+
+.categoriaItem {
+  display: flex;
+  align-items: center;
+  padding: 8px 5px;
+  border-bottom: 1px solid #edf2f7;
+}
+
+.categoriaItem:last-child {
+  border-bottom: none;
+}
+
+.categoriaCheckbox {
+  margin-right: 10px;
+}
+
+.categoriaLabel {
+  flex: 1;
+  cursor: pointer;
+  font-size: 14px;
+  color: #495057;
+  transition: color 0.2s;
+}
+
+.categoriaLabel:hover {
+  color: #2b2d42;
+}
+
+.categoriaLabel.categoriaSelecionada {
+  color: #4361ee;
+  font-weight: 500;
+}
+
+.categoriasFooter {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  margin-top: 10px;
 }
 
-.uploadLabel {
+.categoriaContador {
+  font-size: 13px;
+  color: #718096;
+}
+
+.categoriasSelecionadasPreview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.categoriaTag {
+  display: flex;
+  align-items: center;
+  background-color: #edf2f7;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 13px;
+  color: #2d3748;
+}
+
+.removerTag {
+  background: none;
+  border: none;
+  color: #718096;
+  cursor: pointer;
+  margin-left: 5px;
+  padding: 0;
+}
+
+/* Upload de Imagem - Estilo atualizado */
+.imagemPreviewContainer {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.imagemPreview {
+  max-width: 100%;
+  max-height: 200px;
+  border-radius: 4px;
+  object-fit: contain;
+}
+
+.uploadButton {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -85,43 +241,25 @@
   border-radius: 6px;
   padding: 20px;
   transition: all 0.2s;
+  background-color: transparent;
+  color: #adb5bd;
+  flex-direction: column;
+  gap: 8px;
+  font-weight: 500;
+  font-size: 14px;
 }
 
-.uploadLabel:hover {
+.uploadButton:hover {
   border-color: #4361ee;
+  background-color: #f8fafc;
 }
 
-.uploadPlaceholder {
+/* Estilo para o texto dentro do botão de upload */
+.uploadButton span {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  color: #adb5bd;
-}
-
-.uploadPlaceholder i {
-  font-size: 24px;
-}
-
-.preview {
-  max-width: 100%;
-  max-height: 200px;
-  border-radius: 4px;
-  object-fit: contain;
-}
-
-.fileInput {
-  display: none;
-}
-
-.removeImage {
-  background: none;
-  border: none;
-  color: #e63946;
-  font-size: 13px;
-  cursor: pointer;
-  align-self: flex-start;
-  padding: 5px 0;
 }
 
 .submitButton {
@@ -147,7 +285,15 @@
 }
 
 @media (max-width: 768px) {
-  .card {
+  .cadastroCard {
     padding: 20px;
+  }
+  
+  .categoriasContainer {
+    max-height: 150px;
+  }
+  
+  .categoriasContainer.expandido {
+    max-height: 250px;
   }
 }

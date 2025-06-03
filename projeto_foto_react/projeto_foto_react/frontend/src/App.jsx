@@ -41,9 +41,6 @@ function App() {
           </div>
           <div className={styles.userInfo}>
             <span>{user.name}</span>
-            <button onClick={logout} className={styles.logoutBtn}>
-              Sair
-            </button>
           </div>
         </header>
         
@@ -57,7 +54,7 @@ function App() {
         </main>
         
         <footer className={styles.appFooter}>
-          <p>Sistema de Contratos © {new Date().getFullYear()}</p>
+          <p>Commtratta © {new Date().getFullYear()}</p>
         </footer>
       </div>
     </div>

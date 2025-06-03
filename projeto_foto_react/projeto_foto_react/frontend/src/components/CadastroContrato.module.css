@@ -309,26 +309,38 @@
   opacity: 1;
   background-color: rgba(0, 0, 0, 0.1);
 }
-
+.imageUploadLabel {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #4a5568;
+}
 
 .imageUpload {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 1rem;
+  gap: 12px;
 }
 
 .uploadArea {
   width: 100%;
-  min-height: 150px;
+  min-height: 180px;
   border: 2px dashed #cbd5e0;
-  border-radius: 8px;
+  border-radius: 10px;
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  transition: border-color 0.3s ease, background-color 0.3s ease;
+  transition: all 0.3s ease;
   background-color: #f8fafc;
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+}
+
+.uploadArea.dragOver {
+  background-color: #e6f0ff;
+  border-color: #4299e1;
 }
 
 .uploadArea:hover {
@@ -336,13 +348,43 @@
   background-color: #edf2f7;
 }
 
-.preview {
-  max-width: 100%;
-  max-height: 200px;
-  height: auto;
-  border-radius: 6px;
-  object-fit: cover;
+.previewContainer {
+  position: relative;
+  width: 100%;
+  height: 100%;
 }
+
+.preview {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  max-height: 300px;
+}
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.uploadArea:hover .overlay {
+  opacity: 1;
+}
+
+.replaceIcon {
+  font-size: 1.5rem;
+  margin-bottom: 8px;
+}
+
 
 .uploadPlaceholder {
   display: flex;
@@ -351,6 +393,7 @@
   justify-content: center;
   color: #718096;
   text-align: center;
+  padding: 20px;
 }
 
 .uploadPlaceholder span {
@@ -362,11 +405,48 @@
   display: none;
 }
 
+.uploadIcon {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  color: #a0aec0;
+}
+
+.uploadText {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dragText {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.orText {
+  font-size: 0.9rem;
+}
+
+.browseText {
+  font-size: 0.95rem;
+  color: #667eea;
+  font-weight: 500;
+}
+
+.fileInfo {
+  font-size: 0.75rem;
+  color: #a0aec0;
+  margin-top: 15px;
+}
+
 .removeImageButton {
-  padding: 0.6rem 1.2rem;
-  background-color: #fed7d7;
-  color: #c53030;
-  border: 1px solid #fbb6b6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background-color: #fff5f5;
+  color: #e53e3e;
+  border: 1px solid #fed7d7;
   border-radius: 6px;
   font-size: 0.9rem;
   font-weight: 500;
@@ -376,11 +456,17 @@
 }
 
 .removeImageButton:hover {
-  background-color: #fcebeb;
-  border-color: #f8a5a5;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  background-color: #fed7d7;
+  border-color: #feb2b2;
 }
 
+.trashIcon {
+  font-size: 1.1rem;
+}
+
+.fileInput {
+  display: none;
+}
 /* Botão de Submit */
 .submitButton {
   width: 100%;
@@ -443,4 +529,89 @@
   .categoriasContainer.expandido {
     max-height: 200px;
   }
+}
+
+.dateInputContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.inputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.calendarIcon {
+  position: absolute;
+  left: 12px;
+  color: #667eea;
+  font-size: 18px;
+  pointer-events: none;
+}
+
+.dateInput {
+  padding-left: 40px;
+  width: 100%;
+  cursor: pointer;
+}
+
+.dateInput:hover {
+  border-color: #667eea;
+}
+
+.dateInput:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+}
+
+.datePreview {
+  padding: 8px 12px;
+  background-color: #f0f7ff;
+  border-radius: 6px;
+  color: #2d3748;
+  font-size: 0.9rem;
+  border-left: 3px solid #667eea;
+  display: flex;
+  gap: 8px;
+}
+
+.datePreview span {
+  font-weight: 600;
+  color: #4a5568;
+}
+
+.dateInfo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #4a5568;
+  font-size: 0.85rem;
+  margin-top: 4px;
+}
+
+.dateInfo svg {
+  color: #667eea;
+  flex-shrink: 0;
+}
+
+/* Ajustes para o calendário nativo em diferentes navegadores */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  background: transparent;
+  bottom: 0;
+  color: transparent;
+  cursor: pointer;
+  height: auto;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: auto;
+}
+
+input[type="date"] {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
 }

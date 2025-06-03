@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../services/api';
 import styles from './CadastroContrato.module.css';
-import { FiSearch, FiX, FiChevronDown, FiChevronUp } from 'react-icons/fi';
+import { FiSearch, FiX, FiChevronDown, FiChevronUp, FiCalendar, FiInfo, FiUploadCloud, FiRefreshCw, FiTrash2 } from 'react-icons/fi';
 
 const CadastrarContrato = () => {
   const navigate = useNavigate();
@@ -22,6 +22,9 @@ const CadastrarContrato = () => {
   const [filtroCategorias, setFiltroCategorias] = useState('');
   const [categoriasExpandidas, setCategoriasExpandidas] = useState(false);
   const categoriasContainerRef = useRef(null);
+  const [touchedFields, setTouchedFields] = useState({
+    dataValidade: false,
+  });
 
   useEffect(() => {
     if (!isAuthenticated || user?.tipo_usuario !== 'PJ') {
@@ -47,7 +50,10 @@ const CadastrarContrato = () => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
-
+  const handleBlur = (e) => {
+    const { name } = e.target;
+    setTouchedFields(prev => ({ ...prev, [name]: true }));
+  };
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -130,11 +136,14 @@ const CadastrarContrato = () => {
   if (!isAuthenticated || user?.tipo_usuario !== 'PJ') {
     return null; // Ou um componente de carregamento/acesso negado
   }
+  const amanha = new Date();
+  amanha.setDate(amanha.getDate() + 1);
+  const dataMinima = amanha.toISOString().split('T')[0];
 
   return (
     <div className={styles.container}>
       <div className={styles.card}>
-        <h2 className={styles.title}>Cadastrar Novo Contrato</h2>
+        <h2 className={styles.title}>CADASTRO DE UM NOVO CONTRATO</h2>
 
         {error && <div className={styles.error}>{error}</div>}
 
@@ -168,16 +177,38 @@ const CadastrarContrato = () => {
 
           <div className={styles.formGroup}>
             <label htmlFor="dataValidade">Data de Validade *</label>
-            <input
-              type="date"
-              id="dataValidade"
-              name="dataValidade"
-              value={formData.dataValidade}
-              onChange={handleChange}
-              required
-              min={new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().split("T")[0]} // Data mínima é amanhã
-              className={styles.input}
-            />
+            <div className={styles.dateInputContainer}>
+              <div className={styles.inputWrapper}>
+                <FiCalendar className={styles.calendarIcon} />
+                <input
+                  type="date"
+                  id="dataValidade"
+                  name="dataValidade"
+                  value={formData.dataValidade}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  required
+                  min={dataMinima}
+                  className={`${styles.input} ${styles.dateInput}`}
+                />
+              </div>
+              {touchedFields.dataValidade && formData.dataValidade && (
+                <div className={styles.datePreview}>
+                  <span>Selecionado:</span>
+                  {new Date(formData.dataValidade).toLocaleDateString('pt-BR', {
+                    day: '2-digit',
+                    month: 'long',
+                    year: 'numeric'
+                  })}
+                </div>
+              )}
+              {touchedFields.dataValidade && formData.dataValidade && (
+                <div className={styles.dateInfo}>
+                  <FiInfo />
+                  <span>O contrato expirará nesta data</span>
+                </div>
+              )}
+            </div>
           </div>
 
           <div className={styles.formGroup}>
@@ -276,44 +307,80 @@ const CadastrarContrato = () => {
             </div>
           </div>
 
-          <div className={styles.formGroup}>
-            <label htmlFor="imagem" className={styles.imageUploadLabel}>Imagem do Contrato (opcional)</label>
-            <div className={styles.imageUpload}>
-              <label htmlFor="imagem" className={styles.uploadArea}>
-                {preview ? (
+         <div className={styles.formGroup}>
+          <label htmlFor="imagem" className={styles.imageUploadLabel}>Imagem do Contrato (opcional)</label>
+          <div className={styles.imageUpload}>
+            <label 
+              htmlFor="imagem" 
+              className={styles.uploadArea}
+              onDragOver={(e) => {
+                e.preventDefault();
+                e.currentTarget.classList.add(styles.dragOver);
+              }}
+              onDragLeave={(e) => {
+                e.preventDefault();
+                e.currentTarget.classList.remove(styles.dragOver);
+              }}
+              onDrop={(e) => {
+                e.preventDefault();
+                e.currentTarget.classList.remove(styles.dragOver);
+                if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                  const file = e.dataTransfer.files[0];
+                  if (file.type.startsWith('image/')) {
+                    handleImageChange({ target: { files: [file] } });
+                  } else {
+                    setError('Por favor, selecione um arquivo de imagem válido (JPEG, PNG, etc).');
+                  }
+                }
+              }}
+            >
+              {preview ? (
+                <div className={styles.previewContainer}>
                   <img src={preview} alt="Preview do contrato" className={styles.preview} />
-                ) : (
-                  <div className={styles.uploadPlaceholder}>
-                    <span>Selecionar Imagem</span>
+                  <div className={styles.overlay}>
+                    <FiRefreshCw className={styles.replaceIcon} />
+                    <span>Clique ou arraste para substituir</span>
                   </div>
-                )}
-              </label>
-              <input
-                type="file"
-                id="imagem"
-                name="imagem"
-                accept="image/*"
-                onChange={handleImageChange}
-                className={styles.fileInput}
-              />
-              {preview && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setPreview(null);
-                    setImagem(null);
-                    const fileInput = document.getElementById('imagem');
-                    if (fileInput) {
-                      fileInput.value = "";
-                    }
-                  }}
-                  className={styles.removeImageButton}
-                >
-                  Remover Imagem
-                </button>
+                </div>
+              ) : (
+                <div className={styles.uploadPlaceholder}>
+                  <FiUploadCloud className={styles.uploadIcon} />
+                  <div className={styles.uploadText}>
+                    <span className={styles.dragText}>Arraste e solte uma imagem aqui</span>
+                    <span className={styles.orText}>ou</span>
+                    <span className={styles.browseText}>Selecione do computador</span>
+                  </div>
+                  <div className={styles.fileInfo}>Formatos suportados: JPG, PNG, GIF • Máx. 5MB</div>
+                </div>
               )}
-            </div>
+            </label>
+            <input
+              type="file"
+              id="imagem"
+              name="imagem"
+              accept="image/*"
+              onChange={handleImageChange}
+              className={styles.fileInput}
+            />
+            {preview && (
+              <button
+                type="button"
+                onClick={() => {
+                  setPreview(null);
+                  setImagem(null);
+                  const fileInput = document.getElementById('imagem');
+                  if (fileInput) {
+                    fileInput.value = "";
+                  }
+                }}
+                className={styles.removeImageButton}
+              >
+                <FiTrash2 className={styles.trashIcon} />
+                Remover Imagem
+              </button>
+            )}
           </div>
+        </div>
 
           <button
             type="submit"

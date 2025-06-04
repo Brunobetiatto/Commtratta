@@ -9,11 +9,11 @@ export const login = async (req, res) => {
   try {
     const { email, senha } = req.body;
     
-    // Consulta no banco para buscar dados do usuário
     const [rows] = await db.query(
       `
       SELECT u.*, 
-        IF(pf.id IS NOT NULL, 'PF', 'PJ') AS tipo_usuario
+        IF(pf.id IS NOT NULL, 'PF', 'PJ') AS tipo_usuario,
+        COALESCE(pf.id, pj.id) AS pessoa_id
       FROM usuarios u
       LEFT JOIN pessoa_fisica pf ON u.id = pf.id
       LEFT JOIN pessoa_juridica pj ON u.id = pj.id
@@ -28,27 +28,23 @@ export const login = async (req, res) => {
 
     const user = rows[0];
 
-    // Atenção: em produção, use hash (bcrypt) em vez de comparar texto puro
     if (senha !== user.senha) {
       return res.status(401).json({ error: 'Credenciais inválidas' });
     }
 
-    // Cria payload do JWT
+    // Usar pessoa_id em vez de user.id para PJ
     const payload = {
-      id: user.id,
+      id: user.tipo_usuario === 'PJ' ? user.pessoa_id : user.id,
       email: user.email,
       tipo: user.tipo_usuario,
     };
 
-    // Gera token com validade de 1 dia
     const token = jwt.sign(payload, process.env.JWT_SECRET, {
       expiresIn: '1d',
     });
 
-    // Remove o campo `senha` do objeto que vamos retornar
     const { senha: _, ...userData } = user;
 
-    // Envia token + dados do usuário (sem senha)
     return res.json({
       token,
       user: {
@@ -73,9 +69,14 @@ export const verifyToken = (req, res, next) => {
   const token = authHeader.split(' ')[1];
 
   try {
-    // Decodifica e verifica o token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded; // deixar disponível em req.user
+    
+    // Adicionar o ID original do usuário
+    req.user = {
+      ...decoded,
+      userId: decoded.id, // Este é o ID da PJ/PF
+    };
+    
     next();
   } catch (error) {
     console.error('Token inválido ou expirado:', error);
@@ -85,10 +86,8 @@ export const verifyToken = (req, res, next) => {
 
 // Handler para a rota GET /auth/validate
 export const validateToken = (req, res) => {
-  // Se chegou aqui, o verifyToken já rodou e garantiu que o token é válido
-  // O decoded JWT está disponível em req.user
   return res.json({
     valid: true,
-    user: req.user, // id, email, tipo
+    user: req.user,
   });
 };

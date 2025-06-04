@@ -5,7 +5,10 @@ import {
   assinarContrato,
   cadastrarContrato,
   getContratos,
-  getContratoById
+  getContratoById, 
+  getAssinantesContrato,
+  getContratosByFornecedor,
+  deleteContrato
 } from '../controllers/ContratoController.js';
 import { verifyToken } from '../controllers/authController.js';
 import upload from '../multerConfig.js';
@@ -21,7 +24,7 @@ const contratoUpload = multer({
       cb(new Error('Apenas imagens são permitidas'), false);
     }
   },
-  limits: { fileSize: 5 * 1024 * 1024 }
+  limits: { fileSize: 5 * 1024 * 1024 } // 5MB
 });
 
 // Rota pública
@@ -32,7 +35,10 @@ router.use(verifyToken);
 
 router.post('/', contratoUpload.single('imagem'), cadastrarContrato);
 router.get('/', getContratos);
+router.get('/meus-contratos', getContratosByFornecedor); // moved up
 router.get('/:id', getContratoById);
+router.get('/:id/assinantes', getAssinantesContrato);
 router.post('/:id/sign', assinarContrato);
+router.delete('/:id', deleteContrato);
 
 export default router;

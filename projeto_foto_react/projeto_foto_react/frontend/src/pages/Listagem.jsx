@@ -60,6 +60,32 @@ const Listagem = () => {
     fetchOpenContracts();
   }, []);
 
+  const handleSignContract = async () => {
+    if (!user || !contractDetails) return;
+
+    try {
+      await axios.post(
+        `http://localhost:8800/api/contratos/${contractDetails.id}/sign`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }
+        }
+      );
+
+      alert('Contrato assinado com sucesso!');
+      closeModal();
+      
+      // Atualizar lista de contratos
+      const response = await axios.get('http://localhost:8800/api/contratos/open');
+      setContracts(response.data);
+    } catch (err) {
+      console.error('Erro ao assinar contrato:', err);
+      alert(err.response?.data?.message || 'Falha ao assinar contrato');
+    }
+  };
+
   const handleContractClick = async (contractId) => {
     setLoadingDetails(true);
     try {
@@ -119,9 +145,6 @@ const Listagem = () => {
           <div className={styles.modalLayout}>
             <div className={styles.modalHeader}>
               <h2 className={styles.modalTitle}>{contractDetails.titulo}</h2>
-              <span className={`${styles.tag} ${getStatusClass(contractDetails.status)}`}>
-                {contractDetails.status}
-              </span>
             </div>
             
             <div className={styles.modalBody}>
@@ -181,7 +204,7 @@ const Listagem = () => {
               </div>
               
               <div className={styles.signatureSection}>
-                <button className={styles.signButton}>
+                <button className={styles.signButton} onClick={handleSignContract}>
                   <i className="fas fa-signature"></i> Assinar Contrato
                 </button>
               </div>

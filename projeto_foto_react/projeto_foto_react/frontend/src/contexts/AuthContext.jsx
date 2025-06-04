@@ -11,27 +11,29 @@ export const AuthProvider = ({ children }) => {
   // Ao montar o provedor, tentamos recuperar token + usuário do localStorage
   useEffect(() => {
     const initializeAuth = async () => {
-      const token = localStorage.getItem('token');
-      const storedUser = localStorage.getItem('user');
+    const token = localStorage.getItem('token');
+    const storedUser = localStorage.getItem('user');
 
-      if (token && storedUser) {
-        try {
-          // Configura o header do Axios para TODAS as requisições daqui em diante
-          api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-
-          // Chama rota de validação do back-end
-          await api.get('/auth/validate');
-          
-          // Se deu certo, mantemos o usuário logado
-          setUser(JSON.parse(storedUser));
-        } catch (err) {
-          // Token inválido ou expirado → limpa e faz logout
-          logout();
-        }
+    if (token && storedUser) {
+      try {
+        api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        
+        // Atualizar para usar o novo endpoint de validação
+        const response = await api.get('/auth/validate');
+        
+        // Atualizar o usuário com dados do token validado
+        setUser({
+          ...JSON.parse(storedUser),
+          id: response.data.user.id, // Usar o ID do token (PJ/PF)
+          tipo: response.data.user.tipo,
+        });
+      } catch (err) {
+        logout();
       }
+    }
 
-      setLoading(false);
-    };
+    setLoading(false);
+  };
 
     initializeAuth();
   }, []);
@@ -46,20 +48,22 @@ export const AuthProvider = ({ children }) => {
 
       const { token, user: userData } = response.data;
 
-      // Salva no localStorage
       localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(userData));
 
-      // Configura o header para próximas requisições
       api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
-      // Seta estado interno do contexto
-      setUser(userData);
+      // Atualizar com o ID correto (PJ/PF)
+      const validated = await api.get('/auth/validate');
+      setUser({
+        ...userData,
+        id: validated.data.user.id,
+        tipo: validated.data.user.tipo,
+      });
+      
       setError('');
-
       return userData;
     } catch (err) {
-      // Se o back-end enviar err.response.data.error, exibe essa mensagem
       setError(err.response?.data?.error || 'Email ou senha incorretos');
       throw err;
     }

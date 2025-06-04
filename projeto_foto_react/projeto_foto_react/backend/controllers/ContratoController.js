@@ -28,39 +28,7 @@ export const getContratosAbertos = async (req, res) => {
 };
 
 // Assinar contrato
-export const assinarContrato = async (req, res) => {
-  const contractId = req.params.id;
-  const { userId } = req.body;
-
-  try {
-    // Verificar se o contrato existe e está aberto
-    const [contract] = await db.query(
-      'SELECT * FROM contratos WHERE id = ? AND status = "ABERTO"',
-      [contractId]
-    );
-
-    if (contract.length === 0) {
-      return res.status(404).json({ message: 'Contrato não encontrado ou não está aberto' });
-    }
-
-    // Atualizar status do contrato
-    await db.query(
-      'UPDATE contratos SET status = "ASSINADO" WHERE id = ?',
-      [contractId]
-    );
-
-    // Registrar a assinatura
-    await db.query(
-      'INSERT INTO contratos_assinados (id_contrato, id_cliente) VALUES (?, ?)',
-      [contractId, userId]
-    );
-
-    res.json({ message: 'Contrato assinado com sucesso' });
-  } catch (error) {
-    console.error('Erro ao assinar contrato:', error);
-    res.status(500).json({ message: 'Erro interno do servidor' });
-  }
-};
+// (Função duplicada removida para evitar erro de redeclaração)
 
 // Cadastrar novo contrato
 export const cadastrarContrato = async (req, res) => {
@@ -135,14 +103,13 @@ export const getContratos = async (req, res) => {
 };
 
 // Obter contrato por ID
-// Obter contrato por ID (versão corrigida)
 export const getContratoById = async (req, res) => {
   try {
     const { id } = req.params;
     
     // Consulta principal corrigida
-    const [contratos] = await db.query(`
-      SELECT 
+    const [contratos] = await db.query(
+      `SELECT 
         c.*, 
         u.email AS fornecedor_email,
         u.telefone AS fornecedor_telefone,
@@ -150,10 +117,11 @@ export const getContratoById = async (req, res) => {
         pj.cnpj AS fornecedor_cnpj,
         pj.descricao AS fornecedor_descricao
       FROM contratos c
-      JOIN pessoa_juridica pj ON c.id_fornecedor = pj.id
+      JOIN pessoa_juridica pj ON c.id_fornecedor = pj.id  
       JOIN usuarios u ON pj.id = u.id  
-      WHERE c.id = ?
-    `, [id]);
+      WHERE c.id = ?`,
+      [id]
+    );
     
     if (contratos.length === 0) {
       return res.status(404).json({ error: 'Contrato não encontrado' });
@@ -174,6 +142,137 @@ export const getContratoById = async (req, res) => {
     res.status(200).json(contrato);
   } catch (error) {
     console.error('Erro ao buscar contrato:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+};
+
+export const assinarContrato = async (req, res) => {
+  const contractId = req.params.id;
+  const userId = req.user.id; // ID do usuário logado
+
+  try {
+    // Verificar se o contrato existe e está aberto
+    const [contract] = await db.query(
+      'SELECT * FROM contratos WHERE id = ? AND status = "ABERTO"',
+      [contractId]
+    );
+
+    if (contract.length === 0) {
+      return res.status(404).json({ message: 'Contrato não encontrado ou não está aberto' });
+    }
+
+    // Verificar se o usuário já assinou este contrato
+    const [existing] = await db.query(
+      'SELECT * FROM contrato_usuarios WHERE usuario_id = ? AND contrato_id = ?',
+      [userId, contractId]
+    );
+
+    if (existing.length > 0) {
+      return res.status(400).json({ message: 'Você já assinou este contrato' });
+    }
+
+    // Registrar a assinatura
+    await db.query(
+      'INSERT INTO contrato_usuarios (usuario_id, contrato_id) VALUES (?, ?)',
+      [userId, contractId]
+    );
+
+    res.json({ message: 'Contrato assinado com sucesso' });
+  } catch (error) {
+    console.error('Erro ao assinar contrato:', error);
+    res.status(500).json({ message: 'Erro interno do servidor' });
+  }
+};
+// Obter contratos do fornecedor logado
+export const getContratosByFornecedor = async (req, res) => {
+  try {
+    // Obter ID do usuário logado (da tabela usuarios)
+    const userId = req.user.id;
+
+    // Primeiro, obter o ID da pessoa jurídica associada ao usuário
+    const [pjRows] = await db.query(
+      'SELECT id FROM pessoa_juridica WHERE id = ?',
+      [userId]
+    );
+
+    if (pjRows.length === 0) {
+      return res.status(403).json({ error: 'Usuário não é uma pessoa jurídica' });
+    }
+
+    const pjId = pjRows[0].id;
+
+    // Agora buscar os contratos usando o ID da PJ
+    const [contratos] = await db.query(
+      `SELECT 
+        c.id, 
+        c.titulo, 
+        c.descricao, 
+        c.data_criacao, 
+        c.data_validade, 
+        c.status,
+        COUNT(cu.id) AS assinaturas
+      FROM contratos c
+      LEFT JOIN contrato_usuarios cu ON c.id = cu.contrato_id
+      WHERE c.id_fornecedor = ?
+      GROUP BY c.id`,
+      [pjId]
+    );
+
+    res.status(200).json(contratos);
+  } catch (error) {
+    console.error('Erro ao buscar contratos do fornecedor:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+};
+
+// Obter assinantes de um contrato
+export const getAssinantesContrato = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Buscar usuários que assinaram o contrato
+    const [usuarios] = await db.query(
+      `SELECT 
+        u.id,
+        u.email,
+        cu.data_insercao
+      FROM contrato_usuarios cu
+      JOIN usuarios u ON cu.usuario_id = u.id
+      WHERE cu.contrato_id = ?`,
+      [id]
+    );
+
+    res.status(200).json({
+      usuariosAssinantes: usuarios
+    });
+  } catch (error) {
+    console.error('Erro ao buscar assinantes do contrato:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+};
+
+// Excluir contrato
+export const deleteContrato = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const fornecedorId = req.user.id;
+
+    // Verificar se o contrato pertence ao fornecedor
+    const [contrato] = await db.query(
+      'SELECT * FROM contratos WHERE id = ? AND id_fornecedor = ?',
+      [id, fornecedorId]
+    );
+
+    if (contrato.length === 0) {
+      return res.status(404).json({ error: 'Contrato não encontrado ou você não tem permissão' });
+    }
+
+    // Excluir o contrato (o cascade excluirá os relacionados)
+    await db.query('DELETE FROM contratos WHERE id = ?', [id]);
+
+    res.status(200).json({ message: 'Contrato excluído com sucesso' });
+  } catch (error) {
+    console.error('Erro ao excluir contrato:', error);
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 };

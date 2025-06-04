@@ -1,0 +1,272 @@
+.container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header {
+  margin-bottom: 30px;
+}
+
+.header h1 {
+  font-size: 24px;
+  margin-bottom: 5px;
+}
+
+.header p {
+  color: #666;
+}
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 300px;
+}
+
+.spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  border-top: 4px solid #3498db;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.errorContainer {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 20px;
+  border-radius: 5px;
+  text-align: center;
+  margin-top: 20px;
+}
+
+.errorContainer i {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.retryButton {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.retryButton:hover {
+  background-color: #c82333;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 40px 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px dashed #dee2e6;
+}
+
+.emptyState i {
+  font-size: 48px;
+  color: #6c757d;
+  margin-bottom: 20px;
+}
+
+.emptyState h3 {
+  margin-bottom: 10px;
+  color: #343a40;
+}
+
+.emptyState p {
+  color: #6c757d;
+}
+
+.contractsTable {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+th, td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #e1e1e1;
+}
+
+th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+}
+
+tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.tag {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.tagAberto {
+  background-color: #cce5ff;
+  color: #004085;
+}
+
+.tagCadastrado {
+  background-color: #e2e3e5;
+  color: #383d41;
+}
+
+.tagAssinado {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.tagAprovado {
+  background-color: #d1ecf1;
+  color: #0c5460;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.actionButton {
+  background: none;
+  border: none;
+  color: #007bff;
+  cursor: pointer;
+  font-size: 16px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.actionButton:hover {
+  background-color: #e9ecef;
+}
+
+.deleteButton {
+  color: #dc3545;
+}
+
+.signaturesButton {
+  background: none;
+  border: none;
+  color: #28a745;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.signaturesButton:hover {
+  color: #218838;
+}
+
+/* Modal Styles */
+.modalBackdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modalContent {
+  background-color: white;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 700px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.modalHeader {
+  padding: 15px 20px;
+  border-bottom: 1px solid #e1e1e1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modalHeader h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #6c757d;
+}
+
+.closeButton:hover {
+  color: #343a40;
+}
+
+.modalBody {
+  padding: 20px;
+}
+
+.modalBody h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #343a40;
+}
+
+.signaturesTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.signaturesTable th {
+  background-color: #f1f3f5;
+}
+
+.signaturesTable td, .signaturesTable th {
+  padding: 10px 15px;
+  border: 1px solid #dee2e6;
+}
+
+.noSignatures {
+  text-align: center;
+  padding: 30px;
+  color: #6c757d;
+}
+
+.noSignatures i {
+  font-size: 48px;
+  margin-bottom: 15px;
+  color: #adb5bd;
+}

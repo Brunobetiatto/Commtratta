@@ -1,40 +1,44 @@
+// src/pages/Listagem.js
 import React, { useState, useEffect } from 'react';
 import styles from './Listagem.module.css';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
+import Modal from '../components/modal';
+import { format } from 'date-fns';
 
 // Função utilitária para formatar datas no formato DD/MM/AAAA
 const formatDate = (isoString) => {
   if (!isoString) return '';
-  const d = new Date(isoString);
-  const day = String(d.getDate()).padStart(2, '0');
-  const month = String(d.getMonth() + 1).padStart(2, '0');
-  const year = d.getFullYear();
-  return `${day}/${month}/${year}`;
+  return format(new Date(isoString), 'dd/MM/yyyy');
 };
 
 // Nova função para retornar a URL da imagem do contrato
 const getContractImageUrl = (rawUrl) => {
-  // Se não existir nada em contract.contrato_img, retorna uma imagem default
-  if (!rawUrl) {
-    return '/default-contract.png'; 
-  }
-
-  // Se a string contiver "uploads", extraímos somente o nome do arquivo
-  // e montamos a URL para http://localhost:8800/uploads/filename.ext
+  if (!rawUrl) return '/default-contract.png';
+  
   if (rawUrl.includes('uploads')) {
     const filename = rawUrl.split('/').pop();
     return `http://localhost:8800/uploads/${filename}`;
   }
 
-  // Caso contrário, assume-se que rawUrl já é a URL completa (externa)
   return rawUrl;
 };
-
+const getStatusClass = (status) => {
+  switch (status) {
+    case 'ABERTO': return styles.tagAberto;
+    case 'CADASTRADO': return styles.tagCadastrado;
+    case 'ASSINADO': return styles.tagAssinado;
+    case 'APROVADO': return styles.tagAprovado;
+    default: return '';
+  }
+};
 const Listagem = () => {
   const [contracts, setContracts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [selectedContract, setSelectedContract] = useState(null);
+  const [contractDetails, setContractDetails] = useState(null);
+  const [loadingDetails, setLoadingDetails] = useState(false);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -55,6 +59,29 @@ const Listagem = () => {
 
     fetchOpenContracts();
   }, []);
+
+  const handleContractClick = async (contractId) => {
+    setLoadingDetails(true);
+    try {
+      const response = await axios.get(`http://localhost:8800/api/contratos/${contractId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      setContractDetails(response.data);
+      setSelectedContract(contractId);
+    } catch (err) {
+      console.error('Erro ao buscar detalhes do contrato:', err);
+      setError('Falha ao carregar detalhes do contrato');
+    } finally {
+      setLoadingDetails(false);
+    }
+  };
+
+  const closeModal = () => {
+    setSelectedContract(null);
+    setContractDetails(null);
+  };
 
   if (loading) {
     return (
@@ -82,6 +109,130 @@ const Listagem = () => {
 
   return (
     <div className={styles.container}>
+      <Modal isOpen={!!selectedContract} onClose={closeModal}>
+        {loadingDetails ? (
+          <div className={styles.loadingDetails}>
+            <div className={styles.spinner}></div>
+            <p>Carregando detalhes...</p>
+          </div>
+        ) : contractDetails ? (
+          <div className={styles.modalLayout}>
+            <div className={styles.modalHeader}>
+              <h2 className={styles.modalTitle}>{contractDetails.titulo}</h2>
+              <span className={`${styles.tag} ${getStatusClass(contractDetails.status)}`}>
+                {contractDetails.status}
+              </span>
+            </div>
+            
+            <div className={styles.modalBody}>
+              <div className={styles.contractImage}>
+                <img 
+                  src={getContractImageUrl(contractDetails.contrato_img)} 
+                  alt={contractDetails.titulo} 
+                />
+              </div>
+              
+              <div className={styles.contractDetails}>
+                <div className={styles.detailItem}>
+                  <span className={styles.detailLabel}>Descrição</span>
+                  <p className={styles.detailValue}>{contractDetails.descricao}</p>
+                </div>
+                
+                <div className={styles.detailItem}>
+                  <span className={styles.detailLabel}>Data de criação</span>
+                  <p className={styles.detailValue}>
+                    {formatDate(contractDetails.data_criacao)}
+                  </p>
+                </div>
+                
+                <div className={styles.detailItem}>
+                  <span className={styles.detailLabel}>Data de validade</span>
+                  <p className={styles.detailValue}>
+                    {contractDetails.data_validade 
+                      ? formatDate(contractDetails.data_validade) 
+                      : 'Sem data de validade'}
+                  </p>
+                </div>
+                
+                {contractDetails.categorias?.length > 0 && (
+                  <div className={styles.detailItem}>
+                    <span className={styles.detailLabel}>Categorias</span>
+                    <div className={styles.categoriesContainer}>
+                      {contractDetails.categorias.map(categoria => (
+                        <span key={categoria.id} className={styles.categoryTag}>
+                          {categoria.nome}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className={styles.contractTerms}>
+              <h3 className={styles.termsTitle}>Termos do Contrato</h3>
+              <div className={styles.termsContent}>
+                <p>Ao assinar este contrato, você concorda com os seguintes termos:</p>
+                <p>1. O fornecedor compromete-se a prestar os serviços descritos no contrato dentro do prazo estabelecido.</p>
+                <p>2. O cliente compromete-se a efetuar o pagamento conforme as condições acordadas.</p>
+                <p>3. Qualquer alteração nos termos deste contrato deverá ser feita por escrito e assinada por ambas as partes.</p>
+                <p>4. O contrato terá validade a partir da data de assinatura até a data de validade especificada.</p>
+                <p>5. Em caso de rescisão antecipada, aplicam-se as penalidades previstas na cláusula de rescisão.</p>
+              </div>
+              
+              <div className={styles.signatureSection}>
+                <button className={styles.signButton}>
+                  <i className="fas fa-signature"></i> Assinar Contrato
+                </button>
+              </div>
+            </div>
+  
+            
+            <div className={styles.supplierInfo}>
+              <h3>Fornecedor</h3>
+              <div className={styles.supplierHeader}>
+                <img 
+                  src={contractDetails.fornecedor_img || '/default-avatar.png'} 
+                  alt="Fornecedor" 
+                  className={styles.supplierAvatar}
+                />
+                <div>
+                  <h4 className={styles.supplierName}>{contractDetails.fornecedor_email}</h4>
+                </div>
+              </div>
+              
+              <div className={styles.supplierDetails}>
+                <div className={styles.detailItem}>
+                  <span className={styles.detailLabel}>CNPJ</span>
+                  <p className={styles.detailValue}>
+                    {contractDetails.fornecedor_cnpj || 'Não informado'}
+                  </p>
+                </div>
+                
+                <div className={styles.detailItem}>
+                  <span className={styles.detailLabel}>Telefone</span>
+                  <p className={styles.detailValue}>
+                    {contractDetails.fornecedor_telefone || 'Não informado'}
+                  </p>
+                </div>
+                
+                <div className={styles.detailItem}>
+                  <span className={styles.detailLabel}>Descrição</span>
+                  <p className={styles.detailValue}>
+                    {contractDetails.fornecedor_descricao || 'Nenhuma descrição fornecida'}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className={styles.errorModal}>
+            <i className="fas fa-exclamation-triangle"></i>
+            <p>Não foi possível carregar os detalhes do contrato</p>
+          </div>
+        )}
+      </Modal>
+
       <div className={styles.header}>
         <h1>Sugestões para você</h1>
       </div>
@@ -101,11 +252,10 @@ const Listagem = () => {
               style={{
                 backgroundImage: `url(${getContractImageUrl(contract.contrato_img)})`,
               }}
+              onClick={() => handleContractClick(contract.id)}
             >
-              {/* Overlay para contraste */}
               <div className={styles.overlay}></div>
 
-              {/* STATUS como tag */}
               {contract.status && (
                 <span
                   className={`${styles.tag} ${
@@ -122,10 +272,8 @@ const Listagem = () => {
                 </span>
               )}
 
-              {/* TÍTULO DO CONTRATO (sem quebra de linha) */}
               <h3 className={styles.cardTitle}>{contract.titulo}</h3>
 
-              {/* RODAPÉ COM DATAS E DESCRIÇÃO (até 80 chars) */}
               <div className={styles.cardFooter}>
                 {contract.descricao && (
                   <p className={styles.servicoDescription}>

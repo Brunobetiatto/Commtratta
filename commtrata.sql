@@ -64,6 +64,22 @@ CREATE TABLE contratos (
         ON DELETE CASCADE
 );
 
+CREATE TABLE contrato_usuarios (
+    id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    usuario_id BIGINT UNSIGNED NOT NULL,
+    contrato_id BIGINT UNSIGNED NOT NULL,
+    data_insercao DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    
+    CONSTRAINT fk_contrato_usuarios_usuario
+        FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+        ON DELETE CASCADE,
+    
+    CONSTRAINT fk_contrato_usuarios_contrato
+        FOREIGN KEY (contrato_id) REFERENCES contratos(id)
+        ON DELETE CASCADE
+);
+
+
 /* ---------------------- CATEGORIAS ---------------------- */
 CREATE TABLE categorias (
     id     BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,

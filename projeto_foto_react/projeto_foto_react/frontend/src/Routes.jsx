@@ -5,6 +5,7 @@ import App from './App';
 import LoginScreen from './components/LoginScreen';
 import CadastroUsuario from './components/CadastroUsuario';
 import CadastroContrato from './components/CadastroContrato';
+import GerenciamentoContratos from './components/GerenciamentoContrato';
 
 const AppRoutes = () => {
   const { isAuthenticated, loading } = useAuth();
@@ -31,6 +32,12 @@ const AppRoutes = () => {
         path="/cadastrar-contrato"
         element={
           isAuthenticated ? <CadastroContrato /> : <Navigate to="/login" replace />
+        }
+      />
+      <Route
+        path="/gerenciamento-contratos"
+        element={
+          isAuthenticated ? <GerenciamentoContratos /> : <Navigate to="/login" replace />
         }
       />
     </Routes>

@@ -135,13 +135,23 @@ export const getContratos = async (req, res) => {
 };
 
 // Obter contrato por ID
+// Obter contrato por ID (versão corrigida)
 export const getContratoById = async (req, res) => {
   try {
     const { id } = req.params;
+    
+    // Consulta principal corrigida
     const [contratos] = await db.query(`
-      SELECT c.*, u.email AS fornecedor_email
+      SELECT 
+        c.*, 
+        u.email AS fornecedor_email,
+        u.telefone AS fornecedor_telefone,
+        u.img AS fornecedor_img,
+        pj.cnpj AS fornecedor_cnpj,
+        pj.descricao AS fornecedor_descricao
       FROM contratos c
-      JOIN usuarios u ON c.id_fornecedor = u.id
+      JOIN pessoa_juridica pj ON c.id_fornecedor = pj.id
+      JOIN usuarios u ON pj.id = u.id  
       WHERE c.id = ?
     `, [id]);
     

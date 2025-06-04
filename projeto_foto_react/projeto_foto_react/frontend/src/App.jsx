@@ -1,9 +1,11 @@
+// src/App.js
 import React from 'react';
 import { useAuth } from './contexts/AuthContext';
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation, Link } from 'react-router-dom'; 
 import Listagem from './pages/Listagem';
 import Sidebar from './components/Sidebar';
-import CadastroContrato from './components/CadastroUsuario';
+import CadastroContrato from './components/CadastroContrato';
+import GerenciamentoContratos from './components/GerenciamentoContrato'; 
 import styles from './App.module.css';
 
 function App() {
@@ -39,8 +41,19 @@ function App() {
             />
             <h1>Contratos</h1>
           </div>
-          <div className={styles.userInfo}>
-            <span>{user.name}</span>
+          
+          {/* Removido o headerNav central */}
+          
+          <div className={styles.headerRight}>
+            <Link 
+              to="/gerenciamento-contratos" 
+              className={styles.navButton}
+            >
+              Gerenciamento
+            </Link>
+            <div className={styles.userInfo}>
+              <span>{user.name}</span>
+            </div>
           </div>
         </header>
         
@@ -49,6 +62,8 @@ function App() {
             <Routes>
               <Route path="/" element={<Listagem />} />
               <Route path="/cadastro-contrato" element={<CadastroContrato />} />
+              {/* Nova rota para gerenciamento */}
+              <Route path="/gerenciamento-contratos" element={<GerenciamentoContratos />} />
             </Routes>
           </div>
         </main>

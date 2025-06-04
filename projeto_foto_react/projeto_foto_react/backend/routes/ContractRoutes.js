@@ -35,7 +35,7 @@ router.use(verifyToken);
 
 router.post('/', contratoUpload.single('imagem'), cadastrarContrato);
 router.get('/', getContratos);
-router.get('/meus-contratos', getContratosByFornecedor); // moved up
+router.get('/meus-contratos', getContratosByFornecedor); 
 router.get('/:id', getContratoById);
 router.get('/:id/assinantes', getAssinantesContrato);
 router.post('/:id/sign', assinarContrato);

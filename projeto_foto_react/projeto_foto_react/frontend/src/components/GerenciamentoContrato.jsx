@@ -314,7 +314,11 @@ const GerenciamentoContratos = () => {
                   {contract.assinaturas > 0 ? (
                     <button 
                       className={styles.signaturesButton}
-                      onClick={() => handleViewSignatures(contract)}
+                      
+                      onClick={(e) => {
+                        e.stopPropagation(); 
+                        handleViewSignatures(contract);
+                      }}
                     >
                       {contract.assinaturas} assinatura(s)
                     </button>
@@ -474,7 +478,7 @@ const GerenciamentoContratos = () => {
                     </button>
                   </div>
                   
-                  <div className={styles.modalBody}>
+                  <div className={styles.modalBody2}>
                     <h3>{selectedContract.titulo}</h3>
                     
                     {selectedContract.assinaturas > 0 ? (

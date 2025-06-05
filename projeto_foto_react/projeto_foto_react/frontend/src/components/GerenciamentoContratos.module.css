@@ -757,3 +757,219 @@ tbody tr:hover {
   background-color: #d1e7dd;
   color: #0f5132;
 }
+.modalLayout {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.modalTitle {
+  font-size: 1.75rem;
+  color: #2d3748;
+  margin: 0;
+  font-weight: 700;
+  flex: 1;
+}
+
+.modalBody {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .modalBody {
+    grid-template-columns: 1fr;
+  }
+}
+
+.contractImage {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8f9fa;
+}
+
+.contractImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.contractDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.detailItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.detailLabel {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #4a5568;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.detailValue {
+  font-size: 1rem;
+  color: #2d3748;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Seção de Termos do Contrato */
+.contractTerms {
+  grid-column: span 2;
+  margin-top: 1rem;
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid #e2e8f0;
+}
+
+@media (max-width: 768px) {
+  .contractTerms {
+    grid-column: span 1;
+  }
+}
+
+.termsTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #2d3748;
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+.termsContent {
+  max-height: 200px;
+  overflow-y: auto;
+  padding: 1rem;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  line-height: 1.6;
+  color: #4a5568;
+  margin-bottom: 1.5rem;
+}
+
+.termsContent p {
+  margin-bottom: 1rem;
+}
+
+/* Botão de Assinatura */
+.signatureSection {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.signButton {
+  background: #18b200;
+  color: white;
+  border: none;
+  padding: 0.85rem 2.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(24, 178, 0, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.signButton:hover {
+  background: #149100;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(24, 178, 0, 0.3);
+}
+
+.signButton:active {
+  transform: translateY(0);
+}
+
+.signButton i {
+  font-size: 1.2rem;
+}
+
+/* Informações do Fornecedor */
+.supplierInfo {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid #e2e8f0;
+  margin-top: 1rem;
+}
+
+.supplierHeader {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.supplierAvatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #e2e8f0;
+}
+
+.supplierName {
+  font-size: 1.25rem;
+  color: #2d3748;
+  margin: 0;
+  font-weight: 600;
+}
+
+.supplierDetails {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+/* Ajustes de responsividade */
+@media (max-width: 480px) {
+  .modalHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .modalTitle {
+    font-size: 1.5rem;
+  }
+  
+  .contractTerms {
+    padding: 1rem;
+  }
+  
+  .signButton {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .supplierHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

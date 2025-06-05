@@ -1,11 +1,11 @@
-// src/App.js
 import React from 'react';
 import { useAuth } from './contexts/AuthContext';
-import { Routes, Route, Navigate, useLocation, Link } from 'react-router-dom'; 
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom'; 
 import Listagem from './pages/Listagem';
 import Sidebar from './components/Sidebar';
 import CadastroContrato from './components/CadastroContrato';
 import GerenciamentoContratos from './components/GerenciamentoContrato'; 
+import Header from './components/Header'; 
 import styles from './App.module.css';
 
 function App() {
@@ -32,34 +32,13 @@ function App() {
       </div>
       
       <div className={styles.mainContent}>
-        <header className={styles.appHeader}>
-          <div className={styles.headerLeft}>
-            <img 
-              src="/favicon.png" 
-              alt="Favicon" 
-              className={styles.favicon}
-            />
-          </div>
-          
-          <div className={styles.headerRight}>
-            <Link 
-              to="/gerenciamento-contratos" 
-              className={styles.navButton}
-            >
-              Gerenciamento
-            </Link>
-            <div className={styles.userInfo}>
-              <span>{user.name}</span>
-            </div>
-          </div>
-        </header>
+        <Header user={user} /> {/* Use o novo componente aqui */}
         
         <main className={styles.appMainContent}>
           <div className={styles.contentContainer}>
             <Routes>
               <Route path="/" element={<Listagem />} />
               <Route path="/cadastro-contrato" element={<CadastroContrato />} />
-              {/* Nova rota para gerenciamento */}
               <Route path="/gerenciamento-contratos" element={<GerenciamentoContratos />} />
             </Routes>
           </div>

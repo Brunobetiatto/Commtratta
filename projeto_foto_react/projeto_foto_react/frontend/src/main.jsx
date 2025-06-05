@@ -6,6 +6,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import { BrowserRouter } from 'react-router-dom';
 import AppRoutes from './Routes';
 import '@fortawesome/fontawesome-free/css/all.min.css';
+import '@fortawesome/free-solid-svg-icons'
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

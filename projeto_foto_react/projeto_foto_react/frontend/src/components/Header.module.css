@@ -1,0 +1,71 @@
+.appHeader {
+  background: white;
+  padding: 20px 30px;
+  box-shadow: var(--shadow);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: var(--content-spacing);
+  z-index: 90;
+  border-radius: var(--border-radius);
+  border: var(--border);
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.favicon {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+}
+
+.navButton {
+  padding: 8px 16px;
+  background-color: #4a76d0;
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.navButton:hover {
+  background-color: #3a66c0;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.userInfo span {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--dark-gray);
+}
+
+@media (max-width: 768px) {
+  .appHeader {
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px;
+    position: relative;
+  }
+
+  .userInfo {
+    width: 100%;
+    justify-content: space-between;
+  }
+}

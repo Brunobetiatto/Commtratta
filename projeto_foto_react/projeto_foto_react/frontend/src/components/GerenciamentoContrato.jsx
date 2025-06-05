@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
 import styles from './GerenciamentoContratos.module.css';
 import Sidebar from '../components/Sidebar';
+import Header from '../components/Header';
 import { format } from 'date-fns';
 
 const GerenciamentoContratos = () => {
@@ -381,22 +382,7 @@ const GerenciamentoContratos = () => {
       </div>
       
       <div className={styles.mainContent}>
-        <header className={styles.appHeader}>
-          <div className={styles.headerLeft}>
-            <img 
-              src="../favicon.png" 
-              alt="Favicon" 
-              className={styles.favicon}
-            />
-            <h1>Gerenciamento de Contratos</h1>
-          </div>
-          
-          <div className={styles.headerRight}>
-            <div className={styles.userInfo}>
-              <span>{user.email.split('@')[0]}</span>
-            </div>
-          </div>
-        </header>
+        <Header user={user} />
         
         <main className={styles.appMainContent}>
           <div className={styles.contentContainer}>

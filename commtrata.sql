@@ -55,6 +55,7 @@ CREATE TABLE contratos (
     titulo          VARCHAR(140) NOT NULL,
     descricao       TEXT,
     data_criacao    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    contrato_arquivo VARCHAR(255) NOT NULL,
     contrato_img    VARCHAR(255),
     status          ENUM('CADASTRADO','ABERTO','ASSINADO','APROVADO')
                    NOT NULL DEFAULT 'CADASTRADO',

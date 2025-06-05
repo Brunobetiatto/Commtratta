@@ -41,17 +41,17 @@ export const cadastrarContrato = async (req, res) => {
     }
 
     const { titulo, descricao, dataValidade, categorias } = req.body;
-    const imagem = req.file ? `/uploads/${req.file.filename}` : null;
-    
+    const imagem = req.files && req.files.imagem ? `/uploads/${req.files.imagem[0].filename}` : null;
+    const arquivo = req.files && req.files.arquivo ? `/uploads/${req.files.arquivo[0].filename}` : null;
     // Iniciar transação
     await db.beginTransaction();
 
     // Inserir contrato
     const [result] = await db.query(
       `INSERT INTO contratos 
-        (id_fornecedor, titulo, descricao, contrato_img, data_validade, status) 
-       VALUES (?, ?, ?, ?, ?, "ABERTO")`,
-      [req.user.id, titulo, descricao, imagem, dataValidade]
+        (id_fornecedor, titulo, descricao, contrato_arquivo, contrato_img, data_validade, status) 
+       VALUES (?, ?, ?, ?, ?, ?, "ABERTO")`,
+      [req.user.id, titulo, descricao, arquivo, imagem, dataValidade]
     );
     
     const contratoId = result.insertId;

@@ -19,6 +19,7 @@ const CadastrarContrato = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imagem, setImagem] = useState(null);
   const [preview, setPreview] = useState(null);
+  const [arquivo, setPdfFile] = useState(null);
   const [filtroCategorias, setFiltroCategorias] = useState('');
   const [categoriasExpandidas, setCategoriasExpandidas] = useState(false);
   const categoriasContainerRef = useRef(null);
@@ -67,6 +68,19 @@ const CadastrarContrato = () => {
     }
   };
 
+  const handlePDFUpload = (e) => {
+    const file = e.target.files[0];
+    if (file && file.type === 'application/pdf') {
+      setPdfFile(file);
+    } else {
+      setError('Por favor, selecione um arquivo PDF válido.');
+    }
+  };
+
+  const removePDF = () => {
+    setPdfFile(null);
+  };
+
   const handleCategoriaChange = (categoriaId) => {
     setCategoriasSelecionadas(prev =>
       prev.includes(categoriaId)
@@ -103,6 +117,7 @@ const CadastrarContrato = () => {
       formDataToSend.append('dataValidade', formData.dataValidade);
       formDataToSend.append('categorias', JSON.stringify(categoriasSelecionadas));
       if (imagem) formDataToSend.append('imagem', imagem);
+      if (arquivo) formDataToSend.append('arquivo', arquivo);
       if (user?.id) {
         formDataToSend.append('empresa_id', user.id); // Ajuste 'empresa_id' conforme seu backend
       }
@@ -306,7 +321,7 @@ const CadastrarContrato = () => {
               </div>
             </div>
           </div>
-
+          
          <div className={styles.formGroup}>
           <label htmlFor="imagem" className={styles.imageUploadLabel}>Imagem do Contrato (opcional)</label>
           <div className={styles.imageUpload}>
@@ -379,6 +394,62 @@ const CadastrarContrato = () => {
                 Remover Imagem
               </button>
             )}
+
+          </div>
+        </div>
+        <div className={styles.formGroup}>
+          <label htmlFor="pdf-upload" className={styles.pdfUploadLabel}>
+            Upload do PDF (opcional)
+          </label>
+          <div
+            className={styles.pdfUploadArea}
+            onDragOver={(e) => {
+              e.preventDefault();
+              e.currentTarget.classList.add(styles.dragOver);
+            }}
+            onDragLeave={(e) => {
+              e.preventDefault();
+              e.currentTarget.classList.remove(styles.dragOver);
+            }}
+            onDrop={(e) => {
+              e.preventDefault();
+              e.currentTarget.classList.remove(styles.dragOver);
+              if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                const file = e.dataTransfer.files[0];
+                if (file.type === 'application/pdf') {
+                  handlePDFUpload({ target: { files: [file] } });
+                } else {
+                  setError('Por favor, selecione um arquivo PDF válido.');
+                }
+              }
+            }}
+          >
+            {arquivo ? (
+              <div className={styles.pdfPreviewContainer}>
+                <span className={styles.pdfFileName}>{arquivo.name}</span>
+                <button
+                  type="button"
+                  onClick={removePDF}
+                  className={styles.removePDFButton}
+                >
+                  <FiTrash2 className={styles.trashIcon} />
+                  Remover PDF
+                </button>
+              </div>
+            ) : (
+              <div className={styles.pdfUploadContent}>
+                <FiUploadCloud className={styles.uploadIcon} />
+                <p>Arraste e solte um PDF aqui ou clique para selecionar</p>
+              </div>
+            )}
+            <input
+              type="file"
+              id="pdf-upload"
+              name="pdf"
+              accept="application/pdf"
+              onChange={handlePDFUpload}
+              className={styles.fileInput}
+            />
           </div>
         </div>
 

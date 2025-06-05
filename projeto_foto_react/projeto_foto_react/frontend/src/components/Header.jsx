@@ -14,11 +14,23 @@ const Header = ({ user }) => {
       </div>
       
       <div className={styles.headerRight}>
+        <Link
+          to="/"
+          className={styles.navButton}
+        >
+          HOME
+        </Link>
+        <Link
+          to="/explorar"
+          className={styles.navButton}
+        >
+          EXPLORAR
+        </Link>
         <Link 
           to="/gerenciamento-contratos" 
           className={styles.navButton}
         >
-          Gerenciamento
+          CONTRATOS
         </Link>
         <div className={styles.userInfo}>
           <span>{user.name}</span>

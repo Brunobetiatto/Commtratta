@@ -18,17 +18,17 @@ import upload from '../multerConfig.js';
 
 const router = express.Router();
 
-const contratoUpload = multer({
-  storage: upload.storage,
-  fileFilter: (req, file, cb) => {
-    if (file.mimetype.startsWith('image/')) {
-      cb(null, true);
-    } else {
-      cb(new Error('Apenas imagens são permitidas'), false);
-    }
-  },
-  limits: { fileSize: 5 * 1024 * 1024 } // 5MB
-});
+// const contratoUpload = multer({
+//   storage: upload.storage,
+//   fileFilter: (req, file, cb) => {
+//     if (file.mimetype.startsWith('image/')) {
+//       cb(null, true);
+//     } else {
+//       cb(new Error('Apenas imagens são permitidas'), false);
+//     }
+//   },
+//   limits: { fileSize: 5 * 1024 * 1024 } // 5MB
+// });
 
 // Rota pública
 router.get('/open', getContratosAbertos);
@@ -36,7 +36,15 @@ router.get('/open', getContratosAbertos);
 // Rotas protegidas
 router.use(verifyToken);
 
-router.post('/', contratoUpload.single('imagem'), cadastrarContrato);
+router.post(
+  '/', 
+  upload.fields([
+    { name: 'imagem',  maxCount: 1 },
+    { name: 'arquivo', maxCount: 1 }
+  ]),
+  cadastrarContrato
+);
+
 router.get('/', getContratos);
 router.get('/meus-contratos', getContratosByFornecedor); 
 router.get('/assinados', verifyToken, getContratosAssinados);

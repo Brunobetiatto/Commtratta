@@ -5,6 +5,23 @@ import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 import Modal from '../components/modal';
 import { format } from 'date-fns';
+import { Document, Page, pdfjs } from 'react-pdf';
+
+import workerSrc from 'pdfjs-dist/build/pdf.worker.min.js?url'; 
+
+pdfjs.GlobalWorkerOptions.workerSrc = workerSrc;
+
+function PdfPreview({ url }) {
+  return (
+    <Document
+      file={url}
+      loading="Carregando PDF…"
+      error="Não foi possível exibir o PDF"
+    >
+      <Page pageNumber={1} width={500} />
+    </Document>
+  );
+}
 
 // Função utilitária para formatar datas no formato DD/MM/AAAA
 const formatDate = (isoString) => {
@@ -14,7 +31,7 @@ const formatDate = (isoString) => {
 
 // Nova função para retornar a URL da imagem do contrato
 const getContractImageUrl = (rawUrl) => {
-  if (!rawUrl) return '/default-contract.png';
+  if (!rawUrl) return 'http://localhost:8800/uploads/default-contract.png';
   
   if (rawUrl.includes('uploads')) {
     const filename = rawUrl.split('/').pop();
@@ -23,6 +40,7 @@ const getContractImageUrl = (rawUrl) => {
 
   return rawUrl;
 };
+
 const getStatusClass = (status) => {
   switch (status) {
     case 'ABERTO': return styles.tagAberto;
@@ -193,14 +211,29 @@ const Listagem = () => {
             </div>
 
             <div className={styles.contractTerms}>
-              <h3 className={styles.termsTitle}>Termos do Contrato</h3>
-              <div className={styles.termsContent}>
-                <p>Ao assinar este contrato, você concorda com os seguintes termos:</p>
-                <p>1. O fornecedor compromete-se a prestar os serviços descritos no contrato dentro do prazo estabelecido.</p>
-                <p>2. O cliente compromete-se a efetuar o pagamento conforme as condições acordadas.</p>
-                <p>3. Qualquer alteração nos termos deste contrato deverá ser feita por escrito e assinada por ambas as partes.</p>
-                <p>4. O contrato terá validade a partir da data de assinatura até a data de validade especificada.</p>
-                <p>5. Em caso de rescisão antecipada, aplicam-se as penalidades previstas na cláusula de rescisão.</p>
+              <div
+                className={styles.pdfPreview}
+                onClick={() =>
+                  window.open(
+                    getContractImageUrl(contractDetails.contrato_arquivo),
+                    '_blank'
+                  )
+                }
+                style={{ cursor: 'pointer' }}
+              >
+                <Document
+                  file={getContractImageUrl(contractDetails.contrato_arquivo)}
+                  onLoadError={(err) =>
+                    console.error('Erro ao carregar PDF:', err)
+                  }
+                >
+                  <Page pageNumber={1} 
+                        width={500} 
+                        className="pdfPageWrapper"
+                        renderTextLayer={false}          
+                        renderAnnotationLayer={false}   
+                        />   {/* mostra a 1ª página */}
+                </Document>
               </div>
               
               <div className={styles.signatureSection}>

@@ -329,38 +329,38 @@ const GerenciamentoContratos = () => {
                 {showActions && (
                   <td>
                     <div className={styles.actions}>
+                      {/* Ver assinaturas */}
                       <button 
                         className={styles.actionButton}
-                        onClick={() => handleViewSignatures(contract)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleViewSignatures(contract)}}
                         title="Ver assinaturas"
                       >
-                        <i className="fas fa-signature"></i>
+                        <i className="fas fa-pen-nib"></i> {/* Ícone de assinatura */}
                       </button>
-                      
+
+                      {/* Fechar contrato */}
                       {showCloseButton && contract.status === 'ABERTO' && contract.assinaturas > 0 && (
                         <button 
                           className={`${styles.actionButton} ${styles.closeContractButton}`}
-                          onClick={() => handleOpenCloseContractModal(contract)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleOpenCloseContractModal(contract)}}
                           title="Fechar contrato"
                         >
-                          <i className="fas fa-file-contract"></i>
+                          <i className="fas fa-lock"></i> {/* Ícone de cadeado para "fechar" */}
                         </button>
                       )}
-                      
-                      <button 
-                        className={styles.actionButton}
-                        title="Editar"
-                      >
-                        <i className="fas fa-edit"></i>
-                      </button>
-                      
-                      {contract.status !== 'FECHADO' && (
+
+                      {/* Excluir contrato */}
+                      {contract.status !== 'ASSINADO' && (
                         <button 
                           className={`${styles.actionButton} ${styles.deleteButton}`}
                           onClick={() => handleDeleteContract(contract.id)}
                           title="Excluir"
                         >
-                          <i className="fas fa-trash-alt"></i>
+                          <i className="fas fa-trash-alt"></i> {/* Ícone de lixeira */}
                         </button>
                       )}
                     </div>

@@ -320,3 +320,77 @@ export const deleteContrato = async (req, res) => {
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 };
+
+export const fecharContrato = async (req, res) => {
+  const contractId = req.params.id;
+  const { clienteId } = req.body;
+  const fornecedorId = req.user.id;
+
+  try {
+    // Verificar se o contrato pertence ao fornecedor
+    const [contrato] = await db.query(
+      'SELECT * FROM contratos WHERE id = ? AND id_fornecedor = ?',
+      [contractId, fornecedorId]
+    );
+
+    if (contrato.length === 0) {
+      return res.status(404).json({ message: 'Contrato não encontrado ou você não é o fornecedor' });
+    }
+
+    // Verificar se o cliente assinou o contrato
+    const [assinatura] = await db.query(
+      'SELECT * FROM contrato_usuarios WHERE contrato_id = ? AND usuario_id = ?',
+      [contractId, clienteId]
+    );
+
+    if (assinatura.length === 0) {
+      return res.status(400).json({ message: 'Este cliente não assinou o contrato' });
+    }
+
+    // Atualizar status do contrato
+    await db.query(
+      'UPDATE contratos SET status = "ASSINADO" WHERE id = ?',
+      [contractId]
+    );
+
+    // Registrar na tabela contratos_assinados
+    await db.query(
+      'INSERT INTO contratos_assinados (id_contrato, id_cliente) VALUES (?, ?)',
+      [contractId, clienteId]
+    );
+
+    res.json({ message: 'Contrato fechado com sucesso' });
+  } catch (error) {
+    console.error('Erro ao fechar contrato:', error);
+    res.status(500).json({ message: 'Erro interno do servidor' });
+  }
+};
+
+export const getContratosFechados = async (req, res) => {
+  try {
+    const fornecedorId = req.user.id;
+
+    const [contratos] = await db.query(
+      `SELECT 
+        c.id,
+        c.titulo,
+        c.descricao,
+        c.data_criacao,
+        c.data_validade,
+        c.status,
+        c.contrato_img,
+        u.email AS cliente_email,
+        ca.data_assinatura
+      FROM contratos c
+      JOIN contratos_assinados ca ON c.id = ca.id_contrato
+      JOIN usuarios u ON ca.id_cliente = u.id
+      WHERE c.id_fornecedor = ? AND c.status = 'ASSINADO'`,
+      [fornecedorId]
+    );
+
+    res.status(200).json(contratos);
+  } catch (error) {
+    console.error('Erro ao buscar contratos fechados:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+};

@@ -552,3 +552,208 @@ tbody tr:hover {
   background-color: #4361ee;
   border-radius: 3px 3px 0 0;
 }
+
+/* Adicione estas regras ao seu CSS existente */
+
+/* Botão para fechar contrato */
+.closeContractButton {
+  color: #28a745;
+}
+
+.closeContractButton:hover {
+  background-color: rgba(40, 167, 69, 0.1);
+}
+
+/* Modal de informações do usuário */
+.userModalContent {
+  background-color: white;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.userModalBody {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.userProfile {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.userAvatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 15px;
+  border: 3px solid #f1f5f9;
+}
+
+.userName {
+  font-size: 22px;
+  margin-bottom: 5px;
+  color: #212529;
+}
+
+.userEmail {
+  color: #6c757d;
+  font-size: 16px;
+}
+
+.userDetails {
+  width: 100%;
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 12px;
+}
+
+.detailItem {
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.detailItem:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.detailLabel {
+  font-weight: 600;
+  color: #495057;
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+.detailValue {
+  color: #212529;
+  font-size: 16px;
+}
+
+/* Botão para ver perfil do usuário */
+.viewUserButton {
+  background-color: #4361ee;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.viewUserButton:hover {
+  background-color: #3a56d4;
+}
+
+.viewUserButton i {
+  margin-right: 5px;
+}
+
+/* Modal para fechar contrato */
+.clientList {
+  max-height: 300px;
+  overflow-y: auto;
+  margin: 20px 0;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.clientCard {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.clientCard:hover {
+  background-color: #f8f9fa;
+  border-color: #dee2e6;
+}
+
+.selectedClient {
+  background-color: #e7f5ff;
+  border-color: #a5d8ff;
+}
+
+.clientInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.clientName {
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.clientEmail {
+  color: #6c757d;
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+.clientSignDate {
+  font-size: 13px;
+  color: #28a745;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.cancelButton {
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.cancelButton:hover {
+  background-color: #5a6268;
+}
+
+.confirmButton {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.confirmButton:hover {
+  background-color: #218838;
+}
+
+.confirmButton:disabled {
+  background-color: #94d3a2;
+  cursor: not-allowed;
+}
+
+/* Tag para status fechado */
+.tagFechado {
+  background-color: #d1e7dd;
+  color: #0f5132;
+}

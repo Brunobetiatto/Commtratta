@@ -9,7 +9,9 @@ import {
   getAssinantesContrato,
   getContratosByFornecedor,
   deleteContrato, 
-  getContratosAssinados
+  getContratosAssinados,
+  fecharContrato, 
+  getContratosFechados
 } from '../controllers/ContratoController.js';
 import { verifyToken } from '../controllers/authController.js';
 import upload from '../multerConfig.js';
@@ -38,6 +40,8 @@ router.post('/', contratoUpload.single('imagem'), cadastrarContrato);
 router.get('/', getContratos);
 router.get('/meus-contratos', getContratosByFornecedor); 
 router.get('/assinados', verifyToken, getContratosAssinados);
+router.post('/:id/fechar', verifyToken, fecharContrato);
+router.get('/fechados', verifyToken, getContratosFechados);
 router.get('/:id', getContratoById);
 router.get('/:id/assinantes', getAssinantesContrato);
 router.post('/:id/sign', assinarContrato);

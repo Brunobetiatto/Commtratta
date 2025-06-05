@@ -35,14 +35,11 @@ function App() {
         <header className={styles.appHeader}>
           <div className={styles.headerLeft}>
             <img 
-              src="/favicon.ico" 
+              src="/favicon.png" 
               alt="Favicon" 
               className={styles.favicon}
             />
-            <h1>Contratos</h1>
           </div>
-          
-          {/* Removido o headerNav central */}
           
           <div className={styles.headerRight}>
             <Link 

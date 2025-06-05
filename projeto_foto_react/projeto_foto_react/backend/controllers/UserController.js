@@ -115,3 +115,38 @@ export const getUsers = async (req, res) => {
     res.status(500).json({ message: 'Erro interno do servidor' });
   }
 };
+
+export const getUserById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const [usuario] = await db.query(
+      `SELECT 
+        u.id,
+        u.email,
+        u.telefone,
+        u.img,
+        u.interesses,
+        u.criado_em,
+        u.atualizado_em,
+        CASE
+          WHEN pj.id IS NOT NULL THEN 'PJ'
+          WHEN pf.id IS NOT NULL THEN 'PF'
+          ELSE 'Unknown'
+        END AS tipo
+      FROM usuarios u
+      LEFT JOIN pessoa_juridica pj ON u.id = pj.id
+      LEFT JOIN pessoa_fisica pf ON u.id = pf.id
+      WHERE u.id = ?`,
+      [id]
+    );
+    
+    if (usuario.length === 0) {
+      return res.status(404).json({ message: 'Usuário não encontrado' });
+    }
+    
+    res.status(200).json(usuario[0]);
+  } catch (error) {
+    console.error('Erro ao buscar usuário:', error);
+    res.status(500).json({ message: 'Erro interno do servidor' });
+  }
+};

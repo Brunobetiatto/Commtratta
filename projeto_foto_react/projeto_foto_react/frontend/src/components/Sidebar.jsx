@@ -12,7 +12,7 @@ const Sidebar = () => {
  
 
   const getImageUrl = () => {
-    if (!user.img) return '/default-profile.png';
+    if (!user.img) return 'http://localhost:8800/uploads/defaut2.png';
     
     if (user.img.includes('uploads')) {
       const filename = user.img.split('/').pop();

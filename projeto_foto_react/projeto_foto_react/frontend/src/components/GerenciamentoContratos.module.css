@@ -515,3 +515,40 @@ tbody tr:hover {
     font-size: 14px;
   }
 }
+
+.tabs {
+  display: flex;
+  margin: 20px 0;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.tab {
+  padding: 12px 24px;
+  background: none;
+  border: none;
+  font-size: 16px;
+  font-weight: 500;
+  color: #64748b;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s;
+}
+
+.tab:hover {
+  color: #4361ee;
+}
+
+.activeTab {
+  color: #4361ee;
+}
+
+.activeTab::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background-color: #4361ee;
+  border-radius: 3px 3px 0 0;
+}

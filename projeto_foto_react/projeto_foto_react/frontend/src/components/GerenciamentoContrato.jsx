@@ -7,11 +7,13 @@ import { format } from 'date-fns';
 
 const GerenciamentoContratos = () => {
   const { user, logout } = useAuth();
-  const [contracts, setContracts] = useState([]);
+  const [publishedContracts, setPublishedContracts] = useState([]);
+  const [signedContracts, setSignedContracts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [selectedContract, setSelectedContract] = useState(null);
+  const [activeTab, setActiveTab] = useState('publicados'); // 'publicados' ou 'assinados'
 
   const formatDate = (isoString) => {
     if (!isoString) return '';
@@ -28,7 +30,7 @@ const GerenciamentoContratos = () => {
     }
   };
 
-  const fetchContracts = async () => {
+  const fetchPublishedContracts = async () => {
     try {
       const response = await axios.get(
         'http://localhost:8800/api/contratos/meus-contratos', 
@@ -38,12 +40,27 @@ const GerenciamentoContratos = () => {
           }
         }
       );
-      setContracts(response.data);
+      setPublishedContracts(response.data);
     } catch (err) {
-      setError('Erro ao carregar contratos');
+      setError('Erro ao carregar contratos publicados');
       console.error(err);
-    } finally {
-      setLoading(false);
+    }
+  };
+
+  const fetchSignedContracts = async () => {
+    try {
+      const response = await axios.get(
+        'http://localhost:8800/api/contratos/assinados',
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }
+        }
+      );
+      setSignedContracts(response.data);
+    } catch (err) {
+      setError('Erro ao carregar contratos assinados');
+      console.error(err);
     }
   };
 
@@ -68,11 +85,27 @@ const GerenciamentoContratos = () => {
   };
 
   useEffect(() => {
-    if (user && user.tipo_usuario === 'PJ') {
-      fetchContracts();
-    } else {
-      setLoading(false);
-    }
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        
+        if (user && user.tipo_usuario === 'PJ') {
+          await fetchPublishedContracts();
+        }
+        
+        if (user) {
+          await fetchSignedContracts();
+        }
+        
+      } catch (err) {
+        setError('Erro ao carregar dados');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
   }, [user]);
 
   const handleDeleteContract = async (id) => {
@@ -86,7 +119,7 @@ const GerenciamentoContratos = () => {
             }
           }
         );
-        fetchContracts();
+        fetchPublishedContracts();
       } catch (err) {
         alert('Erro ao excluir contrato');
         console.error(err);
@@ -131,12 +164,87 @@ const GerenciamentoContratos = () => {
       <div className={styles.errorContainer}>
         <i className="fas fa-exclamation-triangle"></i>
         <p>{error}</p>
-        <button onClick={fetchContracts} className={styles.retryButton}>
+        <button onClick={() => window.location.reload()} className={styles.retryButton}>
           Tentar novamente
         </button>
       </div>
     );
   }
+
+  const renderContractsTable = (contracts) => {
+    return (
+      <div className={styles.contractsTable}>
+        <table>
+          <thead>
+            <tr>
+              <th>Título</th>
+              <th>Status</th>
+              <th>Data de Criação</th>
+              <th>Data de Validade</th>
+              <th>Assinaturas</th>
+              {activeTab === 'publicados' && <th>Ações</th>}
+            </tr>
+          </thead>
+          <tbody>
+            {contracts.map(contract => (
+              <tr key={contract.id}>
+                <td>{contract.titulo}</td>
+                <td>
+                  <span className={`${styles.tag} ${getStatusClass(contract.status)}`}>
+                    {contract.status}
+                  </span>
+                </td>
+                <td>{formatDate(contract.data_criacao)}</td>
+                <td>
+                  {contract.data_validade 
+                    ? formatDate(contract.data_validade) 
+                    : 'Sem validade'}
+                </td>
+                <td>
+                  {contract.assinaturas > 0 ? (
+                    <button 
+                      className={styles.signaturesButton}
+                      onClick={() => handleViewSignatures(contract)}
+                    >
+                      {contract.assinaturas} assinatura(s)
+                    </button>
+                  ) : (
+                    'Nenhuma'
+                  )}
+                </td>
+                {activeTab === 'publicados' && (
+                  <td>
+                    <div className={styles.actions}>
+                      <button 
+                        className={styles.actionButton}
+                        onClick={() => handleViewSignatures(contract)}
+                        title="Ver assinaturas"
+                      >
+                        <i className="fas fa-signature"></i>
+                      </button>
+                      <button 
+                        className={styles.actionButton}
+                        title="Editar"
+                      >
+                        <i className="fas fa-edit"></i>
+                      </button>
+                      <button 
+                        className={`${styles.actionButton} ${styles.deleteButton}`}
+                        onClick={() => handleDeleteContract(contract.id)}
+                        title="Excluir"
+                      >
+                        <i className="fas fa-trash-alt"></i>
+                      </button>
+                    </div>
+                  </td>
+                )}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  };
 
   return (
     <div className={styles.appContainer}>
@@ -165,85 +273,50 @@ const GerenciamentoContratos = () => {
         <main className={styles.appMainContent}>
           <div className={styles.contentContainer}>
             <div className={styles.header}>
-              <h1>Contratos Publicados</h1>
-              <p>Gerencie os contratos publicados pela sua empresa</p>
+              <h1>{activeTab === 'publicados' ? 'Contratos Publicados' : 'Contratos Assinados'}</h1>
+              <p>
+                {activeTab === 'publicados' 
+                  ? 'Gerencie os contratos publicados pela sua empresa' 
+                  : 'Contratos que sua empresa assinou'}
+              </p>
             </div>
 
-            {contracts.length === 0 ? (
-              <div className={styles.emptyState}>
-                <i className="fas fa-file-contract"></i>
-                <h3>Nenhum contrato encontrado</h3>
-                <p>Você ainda não publicou nenhum contrato.</p>
-              </div>
+            {/* Abas para alternar entre contratos publicados e assinados */}
+            <div className={styles.tabs}>
+              <button 
+                className={`${styles.tab} ${activeTab === 'publicados' ? styles.activeTab : ''}`}
+                onClick={() => setActiveTab('publicados')}
+              >
+                Contratos Publicados
+              </button>
+              <button 
+                className={`${styles.tab} ${activeTab === 'assinados' ? styles.activeTab : ''}`}
+                onClick={() => setActiveTab('assinados')}
+              >
+                Contratos Assinados
+              </button>
+            </div>
+
+            {activeTab === 'publicados' ? (
+              publishedContracts.length === 0 ? (
+                <div className={styles.emptyState}>
+                  <i className="fas fa-file-contract"></i>
+                  <h3>Nenhum contrato encontrado</h3>
+                  <p>Você ainda não publicou nenhum contrato.</p>
+                </div>
+              ) : (
+                renderContractsTable(publishedContracts)
+              )
             ) : (
-              <div className={styles.contractsTable}>
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Título</th>
-                      <th>Status</th>
-                      <th>Data de Criação</th>
-                      <th>Data de Validade</th>
-                      <th>Assinaturas</th>
-                      <th>Ações</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {contracts.map(contract => (
-                      <tr key={contract.id}>
-                        <td>{contract.titulo}</td>
-                        <td>
-                          <span className={`${styles.tag} ${getStatusClass(contract.status)}`}>
-                            {contract.status}
-                          </span>
-                        </td>
-                        <td>{formatDate(contract.data_criacao)}</td>
-                        <td>
-                          {contract.data_validade 
-                            ? formatDate(contract.data_validade) 
-                            : 'Sem validade'}
-                        </td>
-                        <td>
-                          {contract.assinaturas > 0 ? (
-                            <button 
-                              className={styles.signaturesButton}
-                              onClick={() => handleViewSignatures(contract)}
-                            >
-                              {contract.assinaturas} assinatura(s)
-                            </button>
-                          ) : (
-                            'Nenhuma'
-                          )}
-                        </td>
-                        <td>
-                          <div className={styles.actions}>
-                            <button 
-                              className={styles.actionButton}
-                              onClick={() => handleViewSignatures(contract)}
-                              title="Ver assinaturas"
-                            >
-                              <i className="fas fa-signature"></i>
-                            </button>
-                            <button 
-                              className={styles.actionButton}
-                              title="Editar"
-                            >
-                              <i className="fas fa-edit"></i>
-                            </button>
-                            <button 
-                              className={`${styles.actionButton} ${styles.deleteButton}`}
-                              onClick={() => handleDeleteContract(contract.id)}
-                              title="Excluir"
-                            >
-                              <i className="fas fa-trash-alt"></i>
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              signedContracts.length === 0 ? (
+                <div className={styles.emptyState}>
+                  <i className="fas fa-file-signature"></i>
+                  <h3>Nenhum contrato assinado</h3>
+                  <p>Sua empresa ainda não assinou nenhum contrato.</p>
+                </div>
+              ) : (
+                renderContractsTable(signedContracts)
+              )
             )}
 
             {/* Modal para ver assinaturas */}

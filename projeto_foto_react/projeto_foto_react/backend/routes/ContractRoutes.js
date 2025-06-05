@@ -8,7 +8,8 @@ import {
   getContratoById, 
   getAssinantesContrato,
   getContratosByFornecedor,
-  deleteContrato
+  deleteContrato, 
+  getContratosAssinados
 } from '../controllers/ContratoController.js';
 import { verifyToken } from '../controllers/authController.js';
 import upload from '../multerConfig.js';
@@ -36,9 +37,12 @@ router.use(verifyToken);
 router.post('/', contratoUpload.single('imagem'), cadastrarContrato);
 router.get('/', getContratos);
 router.get('/meus-contratos', getContratosByFornecedor); 
+router.get('/assinados', verifyToken, getContratosAssinados);
 router.get('/:id', getContratoById);
 router.get('/:id/assinantes', getAssinantesContrato);
 router.post('/:id/sign', assinarContrato);
 router.delete('/:id', deleteContrato);
+
+
 
 export default router;

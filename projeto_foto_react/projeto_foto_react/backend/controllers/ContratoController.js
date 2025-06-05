@@ -153,12 +153,25 @@ export const assinarContrato = async (req, res) => {
   try {
     // Verificar se o contrato existe e está aberto
     const [contract] = await db.query(
-      'SELECT * FROM contratos WHERE id = ? AND status = "ABERTO"',
+      `SELECT 
+        c.id,
+        c.id_fornecedor 
+      FROM contratos c 
+      WHERE c.id = ? AND c.status = "ABERTO"`,
       [contractId]
     );
 
     if (contract.length === 0) {
       return res.status(404).json({ message: 'Contrato não encontrado ou não está aberto' });
+    }
+
+    const contrato = contract[0];
+
+    // Verificar se o usuário é o fornecedor do contrato
+    if (contrato.id_fornecedor === userId) {
+      return res.status(400).json({ 
+        message: 'Você não pode assinar seu próprio contrato' 
+      });
     }
 
     // Verificar se o usuário já assinou este contrato
@@ -247,6 +260,37 @@ export const getAssinantesContrato = async (req, res) => {
     });
   } catch (error) {
     console.error('Erro ao buscar assinantes do contrato:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+};
+
+export const getContratosAssinados = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const [contratos] = await db.query(
+      `SELECT 
+        c.id,
+        c.titulo,
+        c.descricao,
+        c.data_criacao,
+        c.data_validade,
+        c.status,
+        c.contrato_img,
+        u.email AS fornecedor_email,
+        pj.cnpj AS fornecedor_cnpj,
+        cu.data_insercao AS data_assinatura
+      FROM contratos c
+      JOIN contrato_usuarios cu ON c.id = cu.contrato_id
+      JOIN pessoa_juridica pj ON c.id_fornecedor = pj.id
+      JOIN usuarios u ON pj.id = u.id
+      WHERE cu.usuario_id = ?`,
+      [userId]
+    );
+
+    res.status(200).json(contratos);
+  } catch (error) {
+    console.error('Erro ao buscar contratos assinados:', error);
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 };

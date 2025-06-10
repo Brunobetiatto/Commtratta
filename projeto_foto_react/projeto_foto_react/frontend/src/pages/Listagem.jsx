@@ -29,7 +29,7 @@ const formatDate = (isoString) => {
   return format(new Date(isoString), 'dd/MM/yyyy');
 };
 
-// Nova função para retornar a URL da imagem do contrato
+
 const getContractImageUrl = (rawUrl) => {
   if (!rawUrl) return 'http://localhost:8800/uploads/default-contract.png';
   
@@ -248,7 +248,7 @@ const Listagem = () => {
               <h3>Fornecedor</h3>
               <div className={styles.supplierHeader}>
                 <img 
-                  src={contractDetails.fornecedor_img || '/default-avatar.png'} 
+                  src={getContractImageUrl(user.img) || '/default-avatar.png'} 
                   alt="Fornecedor" 
                   className={styles.supplierAvatar}
                 />

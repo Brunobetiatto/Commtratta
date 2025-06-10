@@ -2,10 +2,27 @@
 html, body {
   height: 100%;
   margin: 0;
+  overflow: hidden;
+  **&::-webkit-scrollbar {
+    width: 0; 
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: transparent; 
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent; 
+  }
+
+  -ms-overflow-style: none; 
+  scrollbar-width: none; 
+
 }
 
 #root {
   display: flex;
   flex-direction: column;
   min-height: 100%;
+  
 }

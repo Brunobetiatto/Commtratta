@@ -44,6 +44,7 @@ html, body, #root {
   min-height: 100vh;
   padding: var(--content-spacing) var(--content-spacing) var(--content-spacing) 0;
   gap: 25px;
+
 }
 
 /* Container da Sidebar */

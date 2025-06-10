@@ -585,7 +585,7 @@ const GerenciamentoContratos = () => {
                   <div className={styles.userModalBody}>
                     <div className={styles.userProfile}>
                       <img 
-                        src={selectedUser.img || 'http://localhost:8800/uploads/defaut2.png'} 
+                        src={getContractImageUrl(selectedUser.img) || 'http://localhost:8800/uploads/defaut2.png'} 
                         alt="Perfil" 
                         className={styles.userAvatar}
                         onError={(e) => {
@@ -784,7 +784,7 @@ const GerenciamentoContratos = () => {
                                   <h3>Fornecedor</h3>
                                   <div className={styles.supplierHeader}>
                                     <img 
-                                      src={contractDetails.fornecedor_img || '/default-avatar.png'} 
+                                      src={getContractImageUrl(user.img) || '/default-avatar.png'} 
                                       alt="Fornecedor" 
                                       className={styles.supplierAvatar}
                                     />

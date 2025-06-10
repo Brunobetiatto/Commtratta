@@ -2,13 +2,13 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import styles from './ChatPage.module.css'; // Estilos específicos do chat
-import layoutStyles from './ChatListPage.module.css'; // Estilos de layout
-import Sidebar from '../components/Sidebar'; // Importa o Sidebar
-import Header from '../components/Header'; // Importa o Header
-import { io } from 'socket.io-client'; // Importa o cliente Socket.IO
+import styles from './ChatPage.module.css'; 
+import layoutStyles from './ChatListPage.module.css'; 
+import Sidebar from '../components/Sidebar'; 
+import Header from '../components/Header'; 
+import { io } from 'socket.io-client'; 
 
-// Assumindo que seu servidor Socket.IO esteja rodando nesta URL
+
 const SOCKET_SERVER_URL = 'http://localhost:8800'; // Ajuste para a URL do seu backend
 let socket; // Declara a variável do socket fora do componente para persistência
 

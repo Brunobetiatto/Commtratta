@@ -1,15 +1,17 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Sidebar.module.css';
 import { useAuth } from '../contexts/AuthContext';
+import axios from 'axios';
 
 const Sidebar = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [userCategories, setUserCategories] = useState([]);
 
   if (!user) return null;
-
- 
 
   const getImageUrl = () => {
     if (!user.img) return 'http://localhost:8800/uploads/defaut2.png';
@@ -21,6 +23,23 @@ const Sidebar = () => {
     
     return user.img;
   };
+
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get(`http://localhost:8800/api/categorias/usuario/${user.id}/interesses`);
+
+        setCategories(response.data);
+      } catch (error) {
+        console.error('Erro ao buscar categorias:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, [user.id]);
 
   return (
     <aside className={styles.sidebar}>
@@ -46,7 +65,18 @@ const Sidebar = () => {
           </p>
         </div>
 
-        {/* Botão visível apenas para PJ */}
+        {categories.length > 0 && (
+          <div className={styles.categoriesSection}>
+            <h4 className={styles.sectionTitle}>Suas Categorias</h4>
+            <div className={styles.categoriesContainer}>
+              {categories.map((category) => (
+                <span key={category.id} className={styles.categoryTag}>
+                  {category.nome}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
         {user.tipo_usuario === "PJ" && (
           <div className={styles.menuSection}>
             <button 

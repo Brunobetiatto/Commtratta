@@ -175,10 +175,6 @@ html, body, #root {
   .mainContent {
     padding-right: 0;
   }
-  
-  .appHeader {
-    top: 0;
-  }
 }
 
 @media (max-width: 768px) {

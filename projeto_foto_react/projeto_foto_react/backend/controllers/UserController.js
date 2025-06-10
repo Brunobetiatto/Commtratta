@@ -98,18 +98,32 @@ export const getUsers = async (req, res) => {
         u.id, 
         u.email, 
         u.telefone, 
-        u.interesses, 
         u.img,
         CASE
           WHEN pj.id IS NOT NULL THEN 'PJ'
           WHEN pf.id IS NOT NULL THEN 'PF'
           ELSE 'Unknown'
-        END AS tipo
+        END AS tipo,
+        IF(COUNT(c.id), JSON_ARRAYAGG(DISTINCT JSON_OBJECT('id', c.id, 'nome', c.nome)), JSON_ARRAY()) AS interesses
       FROM usuarios u
       LEFT JOIN pessoa_juridica pj ON u.id = pj.id
       LEFT JOIN pessoa_fisica pf ON u.id = pf.id
+      LEFT JOIN usuario_interesses ui ON u.id = ui.usuario_id
+      LEFT JOIN categorias c ON ui.categoria_id = c.id
+      GROUP BY u.id
+
     `);
-    res.status(200).json(users);
+    
+    // Converter string JSON para objeto
+  const formattedUsers = users.map(user => ({
+    interesses: Array.isArray(user.interesses)
+    ? user.interesses
+    : typeof user.interesses === 'string'
+      ? JSON.parse(user.interesses)
+      : []
+  }));
+    
+    res.status(200).json(formattedUsers);
   } catch (error) {
     console.error('Erro ao buscar usuários:', error);
     res.status(500).json({ message: 'Erro interno do servidor' });
@@ -120,23 +134,26 @@ export const getUserById = async (req, res) => {
   try {
     const { id } = req.params;
     const [usuario] = await db.query(
-      `SELECT 
-        u.id,
-        u.email,
-        u.telefone,
-        u.img,
-        u.interesses,
-        u.criado_em,
-        u.atualizado_em,
-        CASE
-          WHEN pj.id IS NOT NULL THEN 'PJ'
-          WHEN pf.id IS NOT NULL THEN 'PF'
-          ELSE 'Unknown'
-        END AS tipo
-      FROM usuarios u
-      LEFT JOIN pessoa_juridica pj ON u.id = pj.id
-      LEFT JOIN pessoa_fisica pf ON u.id = pf.id
-      WHERE u.id = ?`,
+       `SELECT 
+          u.id, 
+          u.email, 
+          u.telefone, 
+          u.img,
+          u.criado_em,
+          u.atualizado_em,
+          CASE
+            WHEN pj.id IS NOT NULL THEN 'PJ'
+            WHEN pf.id IS NOT NULL THEN 'PF'
+            ELSE 'Unknown'
+          END AS tipo,
+          IF(COUNT(c.id), JSON_ARRAYAGG(DISTINCT JSON_OBJECT('id', c.id, 'nome', c.nome)), JSON_ARRAY()) AS interesses
+        FROM usuarios u
+        LEFT JOIN pessoa_juridica pj ON u.id = pj.id
+        LEFT JOIN pessoa_fisica pf ON u.id = pf.id
+        LEFT JOIN usuario_interesses ui ON u.id = ui.usuario_id
+        LEFT JOIN categorias c ON ui.categoria_id = c.id
+        WHERE u.id = ?
+        GROUP BY u.id`,
       [id]
     );
     
@@ -144,7 +161,13 @@ export const getUserById = async (req, res) => {
       return res.status(404).json({ message: 'Usuário não encontrado' });
     }
     
-    res.status(200).json(usuario[0]);
+
+    const user = {
+      ...usuario[0],
+      interesses: usuario[0].interesses ? JSON.parse(usuario[0].interesses) : []
+    };
+    
+    res.status(200).json(user);
   } catch (error) {
     console.error('Erro ao buscar usuário:', error);
     res.status(500).json({ message: 'Erro interno do servidor' });

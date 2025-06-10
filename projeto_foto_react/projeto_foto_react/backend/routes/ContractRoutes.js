@@ -30,8 +30,9 @@ const router = express.Router();
 //   limits: { fileSize: 5 * 1024 * 1024 } // 5MB
 // });
 
-// Rota pública
-router.get('/open', getContratosAbertos);
+
+
+
 
 // Rotas protegidas
 router.use(verifyToken);
@@ -44,7 +45,7 @@ router.post(
   ]),
   cadastrarContrato
 );
-
+router.get('/open', getContratosAbertos);
 router.get('/', getContratos);
 router.get('/meus-contratos', getContratosByFornecedor); 
 router.get('/assinados', verifyToken, getContratosAssinados);

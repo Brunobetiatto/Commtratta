@@ -11,17 +11,6 @@ import workerSrc from 'pdfjs-dist/build/pdf.worker.min.js?url';
 
 pdfjs.GlobalWorkerOptions.workerSrc = workerSrc;
 
-function PdfPreview({ url }) {
-  return (
-    <Document
-      file={url}
-      loading="Carregando PDF…"
-      error="Não foi possível exibir o PDF"
-    >
-      <Page pageNumber={1} width={500} />
-    </Document>
-  );
-}
 
 // Função utilitária para formatar datas no formato DD/MM/AAAA
 const formatDate = (isoString) => {
@@ -41,15 +30,6 @@ const getContractImageUrl = (rawUrl) => {
   return rawUrl;
 };
 
-const getStatusClass = (status) => {
-  switch (status) {
-    case 'ABERTO': return styles.tagAberto;
-    case 'CADASTRADO': return styles.tagCadastrado;
-    case 'ASSINADO': return styles.tagAssinado;
-    case 'APROVADO': return styles.tagAprovado;
-    default: return '';
-  }
-};
 const Listagem = () => {
   const [contracts, setContracts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -60,10 +40,20 @@ const Listagem = () => {
   const { user } = useAuth();
 
   useEffect(() => {
-    const fetchOpenContracts = async () => {
+  const fetchOpenContracts = async () => {
       try {
-        const response = await axios.get('http://localhost:8800/api/contratos/open');
+        const token = localStorage.getItem('token');
+        const response = await axios.get(
+          'http://localhost:8800/api/contratos/open', 
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
+        );
+        
         if (response.data) {
+          // Ordena por interesses em comum (já vem ordenado do backend)
           setContracts(response.data);
         } else {
           setError('Erro ao carregar contratos');

@@ -117,8 +117,8 @@
 .menuSection {
   padding: 15px 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: auto; 
 }
-
 .menuButton {
   width: 100%;
   background: rgba(255, 255, 255, 0.08);
@@ -145,4 +145,54 @@
     padding: 10px 12px;
     font-size: 14px;
   }
+}
+
+.descriptionContainer {
+  padding: 20px 0 15px 0; 
+  border-bottom: none; 
+  flex-grow: 0; 
+}
+.description {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+/* NOVOS ESTILOS PARA CATEGORIAS */
+.categoriesSection {
+  padding: 10px 0 15px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex; /* Adicionado */
+  flex-direction: column; /* Adicionado */
+  align-items: center; /* Centraliza horizontalmente */
+}
+
+.sectionTitle {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: white;
+  text-align: center;
+  width: 100%; /* Garante que o título ocupe toda a largura */
+}
+
+.categoriesContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center; /* Centraliza horizontalmente os itens */
+  width: 100%; /* Ocupa toda a largura disponível */
+  max-width: 220px; /* Limita a largura máxima */
+}
+
+.categoryTag {
+  background-color: rgba(255, 255, 255, 0.85);
+  color: #333;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  text-align: center; /* Centraliza o texto dentro da tag */
 }

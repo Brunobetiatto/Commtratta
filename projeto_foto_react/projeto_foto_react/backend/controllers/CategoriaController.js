@@ -1,3 +1,4 @@
+//backend/controllers/ CategoriaController.js
 import db from "../db.js";
 
 export const getCategorias = async (req, res) => {
@@ -25,3 +26,23 @@ export const getCategoriaById = async (req, res) => {
     res.status(500).json({ message: 'Erro interno do servidor' });
   }
 };
+export const getInteressesByUsuarioId = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const [interesses] = await db.query(`
+      SELECT c.id, c.nome 
+      FROM categorias c
+      INNER JOIN usuario_interesses ui ON c.id = ui.categoria_id
+      WHERE ui.usuario_id = ?
+    `, [id]);
+
+    res.status(200).json(interesses);
+  } catch (error) {
+    console.error('Erro ao buscar interesses do usuário:', error);
+    res.status(500).json({ message: 'Erro interno do servidor' });
+  }
+};
+
+
+

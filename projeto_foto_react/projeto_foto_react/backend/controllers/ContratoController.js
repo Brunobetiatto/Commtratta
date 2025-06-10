@@ -4,6 +4,17 @@ import db from '../db.js';
 // Obter contratos abertos
 export const getContratosAbertos = async (req, res) => {
   try {
+    const userId = req.user.id;
+
+    // Buscar interesses do usuário
+    const [interesses] = await db.query(
+      'SELECT categoria_id FROM usuario_interesses WHERE usuario_id = ?',
+      [userId]
+    );
+    
+    const interessesIds = interesses.map(i => i.categoria_id);
+
+    // Buscar contratos abertos com contagem de interesses em comum
     const [contracts] = await db.query(`
       SELECT 
         c.id, 
@@ -14,12 +25,19 @@ export const getContratosAbertos = async (req, res) => {
         c.status,
         c.contrato_img,
         u.email AS fornecedor_email,
-        pj.cnpj AS fornecedor_cnpj
+        pj.cnpj AS fornecedor_cnpj,
+        COUNT(cc.id_categoria) AS interesses_comum
       FROM contratos c
       JOIN pessoa_juridica pj ON c.id_fornecedor = pj.id
       JOIN usuarios u ON pj.id = u.id
+      LEFT JOIN contrato_categorias cc 
+        ON c.id = cc.id_contrato 
+        AND cc.id_categoria IN (?) -- Filtra apenas categorias de interesse
       WHERE c.status = 'ABERTO'
-    `);
+      GROUP BY c.id
+      ORDER BY interesses_comum DESC, c.data_criacao DESC
+    `, [interessesIds.length ? interessesIds : null]);
+
     res.json(contracts);
   } catch (error) {
     console.error('Erro ao buscar contratos abertos:', error);
@@ -27,10 +45,6 @@ export const getContratosAbertos = async (req, res) => {
   }
 };
 
-// Assinar contrato
-// (Função duplicada removida para evitar erro de redeclaração)
-
-// Cadastrar novo contrato
 export const cadastrarContrato = async (req, res) => {
   try {
     // Verificar se o usuário é PJ

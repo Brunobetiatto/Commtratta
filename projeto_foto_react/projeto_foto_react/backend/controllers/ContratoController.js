@@ -32,7 +32,7 @@ export const getContratosAbertos = async (req, res) => {
       JOIN usuarios u ON pj.id = u.id
       LEFT JOIN contrato_categorias cc 
         ON c.id = cc.id_contrato 
-        AND cc.id_categoria IN (?) -- Filtra apenas categorias de interesse
+        AND cc.id_categoria IN (?) 
       WHERE c.status = 'ABERTO'
       GROUP BY c.id
       ORDER BY interesses_comum DESC, c.data_criacao DESC

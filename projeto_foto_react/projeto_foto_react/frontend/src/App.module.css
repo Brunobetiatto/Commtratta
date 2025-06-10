@@ -25,6 +25,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+ 
 }
 
 html, body, #root {
@@ -36,6 +37,7 @@ html, body, #root {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  
 }
 
 /* Container principal */
@@ -61,6 +63,7 @@ html, body, #root {
   min-height: calc(100vh - (var(--content-spacing) * 2));
   gap: var(--content-spacing);
   padding-right: var(--content-spacing);
+  
 }
 
 .logoutBtn {
@@ -89,6 +92,7 @@ html, body, #root {
   background-color: #f5f9ff;
   border-radius: var(--border-radius);
   overflow: hidden;
+  
 }
 
 .contentContainer {
@@ -175,6 +179,7 @@ html, body, #root {
   .mainContent {
     padding-right: 0;
   }
+
 }
 
 @media (max-width: 768px) {

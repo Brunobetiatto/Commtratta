@@ -917,3 +917,21 @@ tbody tr:hover {
     align-items: flex-start;
   }
 }
+
+.startChatButton {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  margin-top: 5px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.startChatButton:hover {
+  background-color: #218838;
+}

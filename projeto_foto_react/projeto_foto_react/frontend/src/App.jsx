@@ -8,6 +8,7 @@ import GerenciamentoContratos from './components/GerenciamentoContrato';
 import Header from './components/Header'; 
 import styles from './App.module.css';
 
+
 function App() {
   const { user, isAuthenticated, loading, logout } = useAuth();
   const location = useLocation();

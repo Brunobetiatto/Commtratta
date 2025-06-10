@@ -55,7 +55,7 @@ CREATE TABLE contratos (
     titulo          VARCHAR(140) NOT NULL,
     descricao       TEXT,
     data_criacao    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    contrato_arquivo VARCHAR(255) NOT NULL,
+    contrato_arquivo VARCHAR(255),
     contrato_img    VARCHAR(255),
     status          ENUM('CADASTRADO','ABERTO','ASSINADO','APROVADO')
                    NOT NULL DEFAULT 'CADASTRADO',
@@ -167,6 +167,44 @@ CREATE TABLE pagamentos_contrato (
         ON DELETE CASCADE,
     CONSTRAINT fk_pagcontrato__pag
         FOREIGN KEY (id_pagamento) REFERENCES pagamentos(id)
+);
+
+CREATE TABLE chats (
+    id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    contrato_id BIGINT UNSIGNED NOT NULL,
+    fornecedor_id BIGINT UNSIGNED NOT NULL,
+    cliente_id BIGINT UNSIGNED NOT NULL,
+    data_criacao DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    
+    CONSTRAINT fk_chat_contrato
+        FOREIGN KEY (contrato_id) REFERENCES contratos(id)
+        ON DELETE CASCADE,
+        
+    CONSTRAINT fk_chat_fornecedor
+        FOREIGN KEY (fornecedor_id) REFERENCES usuarios(id)
+        ON DELETE CASCADE,
+        
+    CONSTRAINT fk_chat_cliente
+        FOREIGN KEY (cliente_id) REFERENCES usuarios(id)
+        ON DELETE CASCADE
+);
+
+
+CREATE TABLE mensagens (
+    id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    chat_id BIGINT UNSIGNED NOT NULL,
+    remetente_id BIGINT UNSIGNED NOT NULL,
+    conteudo TEXT NOT NULL,
+    data_envio DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    lida BOOLEAN NOT NULL DEFAULT 0,
+    
+    CONSTRAINT fk_mensagem_chat
+        FOREIGN KEY (chat_id) REFERENCES chats(id)
+        ON DELETE CASCADE,
+        
+    CONSTRAINT fk_mensagem_remetente
+        FOREIGN KEY (remetente_id) REFERENCES usuarios(id)
+        ON DELETE CASCADE
 );
 
 /* =============================================================

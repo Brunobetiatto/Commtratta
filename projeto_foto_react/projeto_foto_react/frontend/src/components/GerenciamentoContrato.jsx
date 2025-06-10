@@ -37,6 +37,26 @@ const GerenciamentoContratos = () => {
     }
   };
 
+  const handleStartChat = async (contratoId, clienteId) => {
+    try {
+      const response = await axios.post(
+        'http://localhost:8800/api/chats',
+        { contrato_id: contratoId, cliente_id: clienteId },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }
+        }
+      );
+      
+      alert('Chat iniciado com sucesso!');
+      closeAllModals();
+    } catch (error) {
+      console.error('Erro ao iniciar chat:', error);
+      alert(error.response?.data?.message || 'Erro ao iniciar chat');
+    }
+  };
+
   const fetchPublishedContracts = async () => {
     try {
       const response = await axios.get(
@@ -491,6 +511,15 @@ const GerenciamentoContratos = () => {
                                 >
                                   <i className="fas fa-user"></i> Ver perfil
                                 </button>
+
+                                
+                                <button 
+                                  className={styles.startChatButton}
+                                  onClick={() => handleStartChat(selectedContract.id, user.id)}
+                                >
+                                  <i className="fas fa-comment"></i> Iniciar Chat
+                                </button>
+                        
                               </td>
                             </tr>
                           ))}

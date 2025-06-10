@@ -34,11 +34,10 @@ export const login = async (req, res) => {
 
     // Usar pessoa_id em vez de user.id para PJ
     const payload = {
-      id: user.tipo_usuario === 'PJ' ? user.pessoa_id : user.id,
+      id: user.id, 
       email: user.email,
       tipo: user.tipo_usuario,
     };
-
     const token = jwt.sign(payload, process.env.JWT_SECRET, {
       expiresIn: '1d',
     });
@@ -74,7 +73,7 @@ export const verifyToken = (req, res, next) => {
     // Adicionar o ID original do usuário
     req.user = {
       ...decoded,
-      userId: decoded.id, // Este é o ID da PJ/PF
+      userId: decoded.id, 
     };
     
     next();

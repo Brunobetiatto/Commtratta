@@ -6,7 +6,8 @@ import LoginScreen from './components/LoginScreen';
 import CadastroUsuario from './components/CadastroUsuario';
 import CadastroContrato from './components/CadastroContrato';
 import GerenciamentoContratos from './components/GerenciamentoContrato';
-
+import ChatListPage from './pages/ChatListPage';
+import ChatPage from './pages/ChatPage';
 const AppRoutes = () => {
   const { isAuthenticated, loading } = useAuth();
 
@@ -38,6 +39,19 @@ const AppRoutes = () => {
         path="/gerenciamento-contratos"
         element={
           isAuthenticated ? <GerenciamentoContratos /> : <Navigate to="/login" replace />
+        }
+      />
+
+      <Route
+        path="/chats"
+        element={
+          isAuthenticated ? <ChatListPage /> : <Navigate to="/login" replace />
+        }
+      />
+      <Route
+        path="/chats/:chatId"
+        element={
+          isAuthenticated ? <ChatPage /> : <Navigate to="/login" replace />
         }
       />
     </Routes>

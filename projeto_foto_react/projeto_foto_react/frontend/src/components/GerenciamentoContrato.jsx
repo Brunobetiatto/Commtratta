@@ -5,6 +5,8 @@ import styles from './GerenciamentoContratos.module.css';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import { format } from 'date-fns';
+import { Document, Page, pdfjs } from 'react-pdf';
+import workerSrc from 'pdfjs-dist/build/pdf.worker.min.js?url'; 
 
 const GerenciamentoContratos = () => {
   const { user, logout } = useAuth();
@@ -28,6 +30,8 @@ const GerenciamentoContratos = () => {
     if (!isoString) return '';
     return format(new Date(isoString), 'dd/MM/yyyy');
   };
+
+  
 
   const getStatusClass = (status) => {
     switch (status) {
@@ -105,6 +109,31 @@ const GerenciamentoContratos = () => {
     } catch (err) {
       setError('Erro ao carregar contratos fechados');
       console.error(err);
+    }
+  };
+  const handleSignContract = async () => {
+    if (!user || !contractDetails) return;
+
+    try {
+      await axios.post(
+        `http://localhost:8800/api/contratos/${contractDetails.id}/sign`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }
+        }
+      );
+
+      alert('Contrato assinado com sucesso!');
+      closeModal();
+      
+      // Atualizar lista de contratos
+      const response = await axios.get('http://localhost:8800/api/contratos/open');
+      setContracts(response.data);
+    } catch (err) {
+      console.error('Erro ao assinar contrato:', err);
+      alert(err.response?.data?.message || 'Falha ao assinar contrato');
     }
   };
 
@@ -239,9 +268,15 @@ const GerenciamentoContratos = () => {
       fetchContractSignatures(contract.id);
     }
   };
-  const getContractImageUrl = (imagePath) => {
-    if (!imagePath) return 'http://localhost:8800/uploads/default-contract.jpg';
-    return `http://localhost:8800${imagePath}`;
+  const getContractImageUrl = (rawUrl) => {
+    if (!rawUrl) return 'http://localhost:8800/uploads/default-contract.png';
+    
+    if (rawUrl.includes('uploads')) {
+      const filename = rawUrl.split('/').pop();
+      return `http://localhost:8800/uploads/${filename}`;
+    }
+
+    return rawUrl;
   };
 
   const handleCloseContract = async () => {
@@ -668,113 +703,120 @@ const GerenciamentoContratos = () => {
                     </div>
                   ) : contractDetails ? (
                     <div className={styles.modalLayout}>
-                      <div className={styles.modalHeader}>
-                        <h2 className={styles.modalTitle}>{contractDetails.titulo}</h2>
-                        <button className={styles.closeButton} onClick={closeContractDetailsModal}>
-                          <i className="fas fa-times"></i>
-                        </button>
-                      </div>
+                                <div className={styles.modalHeader}>
+                                  <h2 className={styles.modalTitle}>{contractDetails.titulo}</h2>
+                                </div>
+                                
+                                <div className={styles.modalBody}>
+                                  <div className={styles.contractImage}>
+                                    <img 
+                                      src={getContractImageUrl(contractDetails.contrato_img)} 
+                                      alt={contractDetails.titulo} 
+                                    />
+                                  </div>
+                                  
+                                  <div className={styles.contractDetails}>
+                                    <div className={styles.detailItem}>
+                                      <span className={styles.detailLabel}>Descrição</span>
+                                      <p className={styles.detailValue}>{contractDetails.descricao}</p>
+                                    </div>
+                                    
+                                    <div className={styles.detailItem}>
+                                      <span className={styles.detailLabel}>Data de criação</span>
+                                      <p className={styles.detailValue}>
+                                        {formatDate(contractDetails.data_criacao)}
+                                      </p>
+                                    </div>
+                                    
+                                    <div className={styles.detailItem}>
+                                      <span className={styles.detailLabel}>Data de validade</span>
+                                      <p className={styles.detailValue}>
+                                        {contractDetails.data_validade 
+                                          ? formatDate(contractDetails.data_validade) 
+                                          : 'Sem data de validade'}
+                                      </p>
+                                    </div>
+                                    
+                                    {contractDetails.categorias?.length > 0 && (
+                                      <div className={styles.detailItem}>
+                                        <span className={styles.detailLabel}>Categorias</span>
+                                        <div className={styles.categoriesContainer}>
+                                          {contractDetails.categorias.map(categoria => (
+                                            <span key={categoria.id} className={styles.categoryTag}>
+                                              {categoria.nome}
+                                            </span>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                    
+                                <div className={styles.contractTerms}>
+                                  <div
+                                    className={styles.pdfPreview}
+                                    onClick={() =>
+                                      window.open(
+                                        getContractImageUrl(contractDetails.contrato_arquivo),
+                                        '_blank'
+                                      )
+                                    }
+                                    style={{ cursor: 'pointer' }}
+                                  >
+                                    <Document
+                                      file={getContractImageUrl(contractDetails.contrato_arquivo)}
+                                      onLoadError={(err) =>
+                                        console.error('Erro ao carregar PDF:', err)
+                                      }
+                                    >
+                                      <Page pageNumber={1} 
+                                            width={500} 
+                                            className="pdfPageWrapper"
+                                            renderTextLayer={false}          
+                                            renderAnnotationLayer={false}   
+                                            />   {/* mostra a 1ª página */}
+                                    </Document>
+                                  </div>
+                                </div>
                       
-                      <div className={styles.modalBody}>
-                        <div className={styles.contractImage}>
-                          <img 
-                            src={getContractImageUrl(contractDetails.contrato_img)} 
-                            alt={contractDetails.titulo} 
-                          />
-                        </div>
-                        
-                        <div className={styles.contractDetails}>
-                          <div className={styles.detailItem}>
-                            <span className={styles.detailLabel}>Descrição</span>
-                            <p className={styles.detailValue}>{contractDetails.descricao}</p>
-                          </div>
-                          
-                          <div className={styles.detailItem}>
-                            <span className={styles.detailLabel}>Data de criação</span>
-                            <p className={styles.detailValue}>
-                              {formatDate(contractDetails.data_criacao)}
-                            </p>
-                          </div>
-                          
-                          <div className={styles.detailItem}>
-                            <span className={styles.detailLabel}>Data de validade</span>
-                            <p className={styles.detailValue}>
-                              {contractDetails.data_validade 
-                                ? formatDate(contractDetails.data_validade) 
-                                : 'Sem data de validade'}
-                            </p>
-                          </div>
-                          
-                          {contractDetails.categorias?.length > 0 && (
-                            <div className={styles.detailItem}>
-                              <span className={styles.detailLabel}>Categorias</span>
-                              <div className={styles.categoriesContainer}>
-                                {contractDetails.categorias.map(categoria => (
-                                  <span key={categoria.id} className={styles.categoryTag}>
-                                    {categoria.nome}
-                                  </span>
-                                ))}
+                                
+                                <div className={styles.supplierInfo}>
+                                  <h3>Fornecedor</h3>
+                                  <div className={styles.supplierHeader}>
+                                    <img 
+                                      src={contractDetails.fornecedor_img || '/default-avatar.png'} 
+                                      alt="Fornecedor" 
+                                      className={styles.supplierAvatar}
+                                    />
+                                    <div>
+                                      <h4 className={styles.supplierName}>{contractDetails.fornecedor_email}</h4>
+                                    </div>
+                                  </div>
+                                  
+                                  <div className={styles.supplierDetails}>
+                                    <div className={styles.detailItem}>
+                                      <span className={styles.detailLabel}>CNPJ</span>
+                                      <p className={styles.detailValue}>
+                                        {contractDetails.fornecedor_cnpj || 'Não informado'}
+                                      </p>
+                                    </div>
+                                    
+                                    <div className={styles.detailItem}>
+                                      <span className={styles.detailLabel}>Telefone</span>
+                                      <p className={styles.detailValue}>
+                                        {contractDetails.fornecedor_telefone || 'Não informado'}
+                                      </p>
+                                    </div>
+                                    
+                                    <div className={styles.detailItem}>
+                                      <span className={styles.detailLabel}>Descrição</span>
+                                      <p className={styles.detailValue}>
+                                        {contractDetails.fornecedor_descricao || 'Nenhuma descrição fornecida'}
+                                      </p>
+                                    </div>
+                                  </div>
+                                </div>
                               </div>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className={styles.contractTerms}>
-                        <h3 className={styles.termsTitle}>Termos do Contrato</h3>
-                        <div className={styles.termsContent}>
-                          <p>Ao assinar este contrato, você concorda com os seguintes termos:</p>
-                          <p>1. O fornecedor compromete-se a prestar os serviços descritos no contrato dentro do prazo estabelecido.</p>
-                          <p>2. O cliente compromete-se a efetuar o pagamento conforme as condições acordadas.</p>
-                          <p>3. Qualquer alteração nos termos deste contrato deverá ser feita por escrito e assinada por ambas as partes.</p>
-                          <p>4. O contrato terá validade a partir da data de assinatura até a data de validade especificada.</p>
-                          <p>5. Em caso de rescisão antecipada, aplicam-se as penalidades previstas na cláusula de rescisão.</p>
-                        </div>
-
-                      </div>
-
-                      
-                      <div className={styles.supplierInfo}>
-                        <h3>Fornecedor</h3>
-                        <div className={styles.supplierHeader}>
-                          <img 
-                            src={contractDetails.fornecedor_img || 'http://localhost:8800/uploads/defaut2.png'} 
-                            alt="Fornecedor" 
-                            className={styles.supplierAvatar}
-                            onError={(e) => {
-                              e.target.onerror = null;
-                              e.target.src = 'http://localhost:8800/uploads/defaut2.png';
-                            }}
-                          />
-                          <div>
-                            <h4 className={styles.supplierName}>{contractDetails.fornecedor_email}</h4>
-                          </div>
-                        </div>
-                        
-                        <div className={styles.supplierDetails}>
-                          <div className={styles.detailItem}>
-                            <span className={styles.detailLabel}>CNPJ</span>
-                            <p className={styles.detailValue}>
-                              {contractDetails.fornecedor_cnpj || 'Não informado'}
-                            </p>
-                          </div>
-                          
-                          <div className={styles.detailItem}>
-                            <span className={styles.detailLabel}>Telefone</span>
-                            <p className={styles.detailValue}>
-                              {contractDetails.fornecedor_telefone || 'Não informado'}
-                            </p>
-                          </div>
-                          
-                          <div className={styles.detailItem}>
-                            <span className={styles.detailLabel}>Descrição</span>
-                            <p className={styles.detailValue}>
-                              {contractDetails.fornecedor_descricao || 'Nenhuma descrição fornecida'}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
                   ) : (
                     <div className={styles.errorModal}>
                       <i className="fas fa-exclamation-triangle"></i>

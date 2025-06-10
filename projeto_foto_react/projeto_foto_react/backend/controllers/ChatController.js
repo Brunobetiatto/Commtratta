@@ -1,3 +1,4 @@
+// backend/controllers/ChatController.js
 import db from '../db.js';
 
 // Iniciar um chat (apenas fornecedor)
@@ -8,39 +9,39 @@ export const iniciarChat = async (req, res) => {
 
     // Verificar se o usuário logado é o fornecedor do contrato
     const [contrato] = await db.query(
-      `SELECT id_fornecedor FROM contratos 
+      `SELECT id_fornecedor FROM contratos
        WHERE id = ? AND id_fornecedor = ?`,
       [contrato_id, fornecedor_id]
     );
 
     if (contrato.length === 0) {
-      return res.status(403).json({ 
-        message: 'Apenas o fornecedor do contrato pode iniciar um chat' 
+      return res.status(403).json({
+        message: 'Apenas o fornecedor do contrato pode iniciar um chat'
       });
     }
 
     // Verificar se o cliente assinou o contrato
     const [assinatura] = await db.query(
-      `SELECT * FROM contrato_usuarios 
+      `SELECT * FROM contrato_usuarios
        WHERE contrato_id = ? AND usuario_id = ?`,
       [contrato_id, cliente_id]
     );
 
     if (assinatura.length === 0) {
-      return res.status(400).json({ 
-        message: 'Este cliente não assinou o contrato' 
+      return res.status(400).json({
+        message: 'Este cliente não assinou o contrato'
       });
     }
 
     // Verificar se já existe um chat para esse contrato e cliente
     const [existingChat] = await db.query(
-      `SELECT * FROM chats 
+      `SELECT * FROM chats
        WHERE contrato_id = ? AND cliente_id = ?`,
       [contrato_id, cliente_id]
     );
 
     if (existingChat.length > 0) {
-      return res.status(200).json({ 
+      return res.status(200).json({
         chat_id: existingChat[0].id,
         message: 'Chat já existe'
       });
@@ -53,9 +54,9 @@ export const iniciarChat = async (req, res) => {
       [contrato_id, fornecedor_id, cliente_id]
     );
 
-    res.status(201).json({ 
+    res.status(201).json({
       message: 'Chat iniciado com sucesso',
-      chat_id: result.insertId 
+      chat_id: result.insertId
     });
   } catch (error) {
     console.error('Erro ao iniciar chat:', error);
@@ -63,46 +64,70 @@ export const iniciarChat = async (req, res) => {
   }
 };
 
-// Enviar uma mensagem
-export const enviarMensagem = async (req, res) => {
+// --- MODIFICADO: Enviar uma mensagem (agora retorna os dados da mensagem) ---
+export const enviarMensagem = async (chatId, conteudo, remetente_id) => {
   try {
-    const { chatId } = req.params;
-    const { conteudo } = req.body;
-    
-    const remetente_id = req.user.userId;
-    const remetente_tipo = req.user.tipo;
-
-    console.log(
-    `Verificando acesso: chatId=${chatId}, userId=${remetente_id}, userType=${remetente_tipo}`
-    );
-
-
     // Verificar se o remetente é participante do chat
     const [chat] = await db.query(
-      `SELECT * FROM chats 
+      `SELECT * FROM chats
        WHERE id = ? AND (fornecedor_id = ? OR cliente_id = ?)`,
       [chatId, remetente_id, remetente_id]
     );
 
     if (chat.length === 0) {
-      return res.status(403).json({ 
-        message: 'Você não tem permissão para enviar mensagens neste chat' 
-      });
+      throw new Error('Você não tem permissão para enviar mensagens neste chat');
     }
 
     // Inserir mensagem
-    await db.query(
+    const [result] = await db.query(
       `INSERT INTO mensagens (chat_id, remetente_id, conteudo)
        VALUES (?, ?, ?)`,
       [chatId, remetente_id, conteudo]
     );
 
-    res.status(201).json({ message: 'Mensagem enviada com sucesso' });
+    // Buscar o email do remetente para retornar junto
+    const [remetenteInfo] = await db.query(
+        `SELECT email FROM usuarios WHERE id = ?`,
+        [remetente_id]
+    );
+
+    const remetente_email = remetenteInfo.length > 0 ? remetenteInfo[0].email : 'Desconhecido';
+
+
+    // Retornar os dados da mensagem salva, incluindo o ID do DB
+    return {
+      id: result.insertId,
+      chat_id: chatId,
+      remetente_id: remetente_id,
+      conteudo: conteudo,
+      data_envio: new Date().toISOString(), // Use a data do servidor ao invés do cliente
+      remetente_email: remetente_email // Adiciona o email para o frontend
+    };
+
   } catch (error) {
-    console.error('Erro ao enviar mensagem:', error);
-    res.status(500).json({ message: 'Erro interno do servidor' });
+    console.error('Erro ao enviar mensagem no controlador:', error);
+    throw error; // Propaga o erro para ser tratado por quem chamou
   }
 };
+
+// Nova função wrapper para a rota HTTP POST de enviar mensagem (se ainda for usada)
+// Isto é para manter a compatibilidade com a rota REST se você precisar dela.
+export const enviarMensagemHttp = async (req, res) => {
+  try {
+    const { chatId } = req.params;
+    const { conteudo } = req.body;
+    const remetente_id = req.user.id;
+
+    const mensagemSalva = await enviarMensagem(chatId, conteudo, remetente_id);
+
+    // No caso da rota HTTP, você pode buscar as mensagens novamente ou apenas confirmar
+    res.status(201).json({ message: 'Mensagem enviada com sucesso', messageData: mensagemSalva });
+  } catch (error) {
+    console.error('Erro na rota HTTP de enviar mensagem:', error);
+    res.status(403).json({ message: error.message || 'Erro ao enviar mensagem' });
+  }
+};
+
 
 // Listar chats de um usuário
 export const listarChats = async (req, res) => {
@@ -110,7 +135,7 @@ export const listarChats = async (req, res) => {
     const userId = req.user.userId;
 
     const [chats] = await db.query(
-      `SELECT 
+      `SELECT
         c.id AS chat_id,
         c.contrato_id,
         c.fornecedor_id,
@@ -145,15 +170,18 @@ export const listarMensagens = async (req, res) => {
 
     // Verificar se o usuário pertence ao chat
     const [chat] = await db.query(
-      `SELECT * FROM chats 
+      `SELECT * FROM chats
        WHERE id = ? AND (fornecedor_id = ? OR cliente_id = ?)`,
       [chatId, userId, userId]
     );
 
-   
+    if (chat.length === 0) { // Adicionado verificação para o chat existir
+        return res.status(403).json({ message: 'Você não tem permissão para visualizar este chat.' });
+    }
+
     // Buscar mensagens
     const [mensagens] = await db.query(
-      `SELECT 
+      `SELECT
         m.id,
         m.remetente_id,
         m.conteudo,
@@ -169,8 +197,8 @@ export const listarMensagens = async (req, res) => {
 
     // Marcar mensagens como lidas (se for o destinatário)
     await db.query(
-      `UPDATE mensagens 
-       SET lida = 1 
+      `UPDATE mensagens
+       SET lida = 1
        WHERE chat_id = ? AND remetente_id != ? AND lida = 0`,
       [chatId, userId]
     );

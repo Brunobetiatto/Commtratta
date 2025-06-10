@@ -99,6 +99,20 @@ html, body, #root {
   border: var(--border);
   overflow-y: auto;
   max-height: calc(100vh - 250px);
+  **&::-webkit-scrollbar {
+    width: 0; 
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: transparent; 
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent; 
+  }
+
+  -ms-overflow-style: none; 
+  scrollbar-width: none; 
 }
 
 /* Footer */

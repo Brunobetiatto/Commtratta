@@ -6,7 +6,9 @@ import Sidebar from './components/Sidebar';
 import CadastroContrato from './components/CadastroContrato';
 import GerenciamentoContratos from './components/GerenciamentoContrato'; 
 import Header from './components/Header'; 
+import Explorar from './pages/Explorar';
 import styles from './App.module.css';
+
 
 
 function App() {
@@ -39,6 +41,7 @@ function App() {
           <div className={styles.contentContainer}>
             <Routes>
               <Route path="/" element={<Listagem />} />
+              <Route path="/explorar" element={<Explorar />} />
               <Route path="/cadastro-contrato" element={<CadastroContrato />} />
               <Route path="/gerenciamento-contratos" element={<GerenciamentoContratos />} />
             </Routes>

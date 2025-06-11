@@ -35,7 +35,7 @@ const Header = ({ user }) => {
 
       <div className={styles.headerRight}>
         <Link to="/" className={styles.navButton}>HOME</Link>
-        <Link to="/explorar" className={styles.navButton}>EXPLORAR</Link>
+        <Link to="/Explorar" className={styles.navButton}>EXPLORAR</Link>
         <Link to="/gerenciamento-contratos" className={styles.navButton}>CONTRATOS</Link>
         <Link to="/chats" className={styles.navButton}>CHAT</Link>
         <div className={styles.userInfo}>

@@ -408,3 +408,36 @@ export const getContratosFechados = async (req, res) => {
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 };
+
+
+// Filtrar contratos por categoria e/ou texto
+export const filtrarContratos = async (req, res) => {
+  const { categoriaId, search } = req.query;
+  try {
+    let sql = `
+      SELECT DISTINCT c.*, u.email AS fornecedor_email, cc.id_categoria AS categoria_id
+      FROM contratos c
+      JOIN usuarios u        ON c.id_fornecedor = u.id
+      LEFT JOIN contrato_categorias cc ON c.id = cc.id_contrato
+      WHERE 1 = 1
+    `;
+    const params = [];
+
+    if (categoriaId) {
+      sql += ' AND cc.id_categoria = ?';
+      params.push(categoriaId);
+    }
+    if (search) {
+      sql += ' AND (c.titulo LIKE ? OR c.descricao LIKE ?)';
+      params.push(`%${search}%`, `%${search}%`);
+    }
+
+    sql += ' ORDER BY c.data_criacao DESC';
+
+    const [contratos] = await db.query(sql, params);
+    res.status(200).json(contratos);
+  } catch (err) {
+    console.error('Erro ao filtrar contratos:', err);
+    res.status(500).json({ message: 'Erro interno do servidor' });
+  }
+};

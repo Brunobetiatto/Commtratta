@@ -410,23 +410,28 @@ export const getContratosFechados = async (req, res) => {
 };
 
 
-// Filtrar contratos por categoria e/ou texto
+// controllers/ContratoController.js
 export const filtrarContratos = async (req, res) => {
   const { categoriaId, search } = req.query;
   try {
     let sql = `
-      SELECT DISTINCT c.*, u.email AS fornecedor_email, cc.id_categoria AS categoria_id
-      FROM contratos c
-      JOIN usuarios u        ON c.id_fornecedor = u.id
-      LEFT JOIN contrato_categorias cc ON c.id = cc.id_contrato
+      SELECT DISTINCT c.*,
+             u.email AS fornecedor_email
+      FROM contratos            c
+      JOIN pessoa_juridica      pj ON pj.id = c.id_fornecedor
+      JOIN usuarios             u  ON u.id = pj.id
+      /* ← aqui: usa as categorias do fornecedor */
+      LEFT JOIN fornecedor_categoria fc ON fc.id_fornecedor = pj.id
       WHERE 1 = 1
     `;
     const params = [];
 
+    /* filtra pela categoria escolhida */
     if (categoriaId) {
-      sql += ' AND cc.id_categoria = ?';
+      sql += ' AND fc.id_categoria = ?';
       params.push(categoriaId);
     }
+
     if (search) {
       sql += ' AND (c.titulo LIKE ? OR c.descricao LIKE ?)';
       params.push(`%${search}%`, `%${search}%`);
@@ -434,10 +439,10 @@ export const filtrarContratos = async (req, res) => {
 
     sql += ' ORDER BY c.data_criacao DESC';
 
-    const [contratos] = await db.query(sql, params);
-    res.status(200).json(contratos);
+    const [rows] = await db.query(sql, params);
+    res.status(200).json(rows);
   } catch (err) {
-    console.error('Erro ao filtrar contratos:', err);
+    console.error(err);
     res.status(500).json({ message: 'Erro interno do servidor' });
   }
 };

@@ -1,81 +1,84 @@
 // src/pages/Explorar.jsx
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import styles from './Explorar.module.css';
 import api from '../services/api';
 import { format } from 'date-fns';
-import Modal from '../components/modal';             // (já utilizado em Listagem)
+import Modal from '../components/modal';
 
 const formatDate = iso =>
   iso ? format(new Date(iso), 'dd/MM/yyyy') : '';
 
 const Explorar = () => {
-  const [categorias, setCategorias] = useState([]);
-  const [contracts, setContracts] = useState([]);
-  const [search, setSearch] = useState('');
+  const [categorias, setCategorias]   = useState([]);
+  const [contracts, setContracts]     = useState([]);
+  const [search, setSearch]           = useState('');
   const [categoriaId, setCategoriaId] = useState('');
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [loading, setLoading]         = useState(true);
+  const [error, setError]             = useState('');
   const [selectedContract, setSelectedContract] = useState(null);
 
   /* ---------- carregamento inicial ---------- */
   useEffect(() => {
-    const fetchInit = async () => {
+    (async () => {
       try {
         const [catRes, cRes] = await Promise.all([
           api.get('/categorias'),
-          api.get('/contratos/filter'),           // nada filtrado = todos
+          api.get('/contratos/filter'),      // todos
         ]);
         setCategorias(catRes.data);
         setContracts(cRes.data);
       } catch (err) {
-        setError(err.response?.data?.message || 'Erro ao carregar dados.');
+        setError(
+          err.response?.data?.message ||
+            'Falha ao carregar dados'
+        );
       } finally {
         setLoading(false);
       }
-    };
-    fetchInit();
+    })();
   }, []);
 
-  /* ---------- filtro MEMOIZADO ---------- */
+  const getContractImageUrl = (rawUrl) => {
+  if (!rawUrl) return 'http://localhost:8800/uploads/default-contract.png';
+  
+  if (rawUrl.includes('uploads')) {
+    const filename = rawUrl.split('/').pop();
+    return `http://localhost:8800/uploads/${filename}`;
+  }
+
+  return rawUrl;
+};
+
+  /* ---------- refiltra localmente  ---------- */
   const contratosFiltrados = useMemo(() => {
+    const termo = search.toLowerCase();
     return contracts.filter(c => {
-      const okSearch =
-        !search ||
-        c.titulo.toLowerCase().includes(search.toLowerCase()) ||
-        c.descricao?.toLowerCase().includes(search.toLowerCase());
-      const okCategoria =
-        !categoriaId || String(c.categoria_id) === String(categoriaId);
-      return okSearch && okCategoria;
+      const okBusca =
+        !termo ||
+        c.titulo.toLowerCase().includes(termo) ||
+        c.descricao?.toLowerCase().includes(termo);
+      return okBusca;
     });
-  }, [contracts, search, categoriaId]);
+  }, [contracts, search]);
 
-  /* ---------- handler disparando busca no backend ---------- */
-  const atualizarContratos = async (catId, termo) => {
-    setLoading(true);
-    try {
-      const { data } = await api.get('/contratos/filter', {
-        params: { categoriaId: catId || '', search: termo || '' },
-      });
-      setContracts(data);
-    } catch (err) {
-      setError(err.response?.data?.message || 'Falha ao filtrar contratos');
-    } finally {
-      setLoading(false);
-    }
-  };
+  /* ---------- busca no backend apenas quando a categoria muda ---------- */
+  useEffect(() => {
+  setLoading(true);
 
-  /* ---------- eventos ---------- */
-  const handleSearchChange = e => {
-    const termo = e.target.value;
-    setSearch(termo);
-    atualizarContratos(categoriaId, termo);
-  };
-
-  const handleCategoriaChange = e => {
-    const id = e.target.value;
-    setCategoriaId(id);
-    atualizarContratos(id, search);
-  };
+  api
+    .get('/contratos/filter', {
+      // se for string vazia, não enviamos o parâmetro
+      params: categoriaId ? { categoriaId } : {},
+    })
+    .then(res => setContracts(res.data))
+    .catch(err =>
+      setError(
+        err.response?.data?.message ||
+          'Erro ao filtrar contratos'
+      )
+    )
+    .finally(() => setLoading(false));
+}, [categoriaId]);
 
   /* ---------- render ---------- */
   if (loading) return <p className={styles.status}>Carregando…</p>;
@@ -85,19 +88,20 @@ const Explorar = () => {
     <section className={styles.container}>
       <h2 className={styles.titulo}>Explorar Contratos</h2>
 
-      {/* Barra de pesquisa + filtro */}
+      {/* Pesquisa + filtro */}
       <div className={styles.ferramentas}>
+        {/* input NÃO está em <form>, portanto nada de reload */}
         <input
           type="text"
-          placeholder="Pesquisar contratos…"
+          placeholder="Pesquisar…"
           value={search}
-          onChange={handleSearchChange}
+          onChange={e => setSearch(e.target.value)}
           className={styles.searchInput}
         />
 
         <select
           value={categoriaId}
-          onChange={handleCategoriaChange}
+          onChange={e => setCategoriaId(e.target.value)}
           className={styles.select}
         >
           <option value="">Todas as categorias</option>
@@ -114,31 +118,31 @@ const Explorar = () => {
         {contratosFiltrados.length === 0 && (
           <p className={styles.nada}>Nenhum contrato encontrado.</p>
         )}
-        {contratosFiltrados.map(c => (
-          <div
-            key={c.id}
-            className={styles.card}
-            onClick={() => setSelectedContract(c)}
-          >
-            <img
-              src={
-                c.contrato_img?.includes('uploads')
-                  ? `http://localhost:8800/uploads/${c.contrato_img.split('/').pop()}`
-                  : c.contrato_img || '/default-contract.png'
-              }
-              alt={c.titulo}
-              className={styles.img}
-            />
-            <h3>{c.titulo}</h3>
-            <p className={styles.descricao}>
-              {c.descricao?.slice(0, 80)}…
-            </p>
-            <span className={styles.data}>{formatDate(c.data_criacao)}</span>
-          </div>
-        ))}
+
+        {contratosFiltrados.map(c => {
+          const imgSrc =
+            c.contrato_img?.startsWith('http')
+              ? c.contrato_img
+              : getContractImageUrl(c.contrato_img); // ← rota estática do backend
+
+          return (
+            <div
+              key={c.id}
+              className={styles.card}
+              onClick={() => setSelectedContract(c)}
+            >
+              <img src={imgSrc} alt={c.titulo} className={styles.img} />
+              <h3>{c.titulo}</h3>
+              <p className={styles.descricao}>
+                {c.descricao?.slice(0, 90)}…
+              </p>
+              <span className={styles.data}>{formatDate(c.data_criacao)}</span>
+            </div>
+          );
+        })}
       </div>
 
-      {/* Modal de detalhes (mesmo componente utilizado em Listagem) */}
+      {/* Modal de detalhes */}
       {selectedContract && (
         <Modal
           onClose={() => setSelectedContract(null)}
@@ -151,3 +155,4 @@ const Explorar = () => {
 };
 
 export default Explorar;
+

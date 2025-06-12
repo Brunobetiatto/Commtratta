@@ -509,191 +509,206 @@ tbody tr:hover {
 }
 
 /* Modal de informações do usuário */
+/* Estrutura principal */
+.modalBackdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
 .userModalContent {
-  background-color: white;
+  background: white;
   border-radius: 16px;
-  width: 90%;
-  max-width: 500px;
+  width: 95%;
+  max-width: 600px;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
+  animation: modalAppear 0.3s ease-out;
+}
+
+@keyframes modalAppear {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #eee;
+  background: linear-gradient(to right, #4361ee, #3a0ca3);
+  color: white;
+  border-radius: 16px 16px 0 0;
+}
+
+.modalHeader h2 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.closeButton {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.closeButton:hover {
+  transform: scale(1.1);
 }
 
 .userModalBody {
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  padding: 25px;
 }
 
+/* Perfil */
 .userProfile {
-  text-align: center;
-  margin-bottom: 25px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #f0f0f0;
 }
 
 .userAvatar {
-  width: 120px;
-  height: 120px;
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
   object-fit: cover;
-  margin-bottom: 15px;
-  border: 3px solid #f1f5f9;
+  border: 4px solid #e0e7ff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.profileInfo {
+  flex: 1;
 }
 
 .userName {
-  font-size: 22px;
-  margin-bottom: 5px;
-  color: #212529;
+  font-size: 1.8rem;
+  margin: 0 0 5px 0;
+  color: #1e293b;
 }
 
-.userEmail {
-  color: #6c757d;
-  font-size: 16px;
+.userEmail, .userUsername {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 5px 0;
+  color: #64748b;
+  font-size: 0.95rem;
 }
 
-.userDetails {
-  width: 100%;
-  background-color: #f8f9fa;
-  padding: 20px;
+/* Grid de informações */
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 25px;
+}
+
+.infoCard {
+  background: #f8fafc;
   border-radius: 12px;
+  padding: 18px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease;
 }
 
-.detailItem {
+.infoCard:hover {
+  transform: translateY(-5px);
+}
+
+.infoCard h4 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 0;
   margin-bottom: 15px;
-  padding-bottom: 15px;
-  border-bottom: 1px solid #e9ecef;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e2e8f0;
+  color: #334155;
+}
+
+/* Itens de detalhe */
+.detailItem {
+  margin-bottom: 12px;
 }
 
 .detailItem:last-child {
   margin-bottom: 0;
-  padding-bottom: 0;
-  border-bottom: none;
 }
 
-.detailLabel {
+.detailItem span {
+  display: block;
   font-weight: 600;
-  color: #495057;
-  font-size: 14px;
-  margin-bottom: 5px;
+  font-size: 0.85rem;
+  color: #475569;
+  margin-bottom: 3px;
 }
 
-.detailValue {
-  color: #212529;
-  font-size: 16px;
+.detailItem p {
+  margin: 0;
+  color: #1e293b;
+  font-size: 1rem;
 }
 
-/* Botão para ver perfil do usuário */
-.viewUserButton {
-  background-color: #4361ee;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 4px;
-  font-size: 14px;
-  cursor: pointer;
-  transition: background-color 0.2s;
+/* Seção de interesses */
+.interestsSection {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 18px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
 
-.viewUserButton:hover {
-  background-color: #3a56d4;
-}
-
-.viewUserButton i {
-  margin-right: 5px;
-}
-
-/* Modal para fechar contrato */
-.clientList {
-  max-height: 300px;
-  overflow-y: auto;
-  margin: 20px 0;
-  border: 1px solid #e9ecef;
-  border-radius: 8px;
-  padding: 10px;
-}
-
-.clientCard {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px;
-  border: 1px solid #e9ecef;
-  border-radius: 8px;
-  margin-bottom: 10px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.clientCard:hover {
-  background-color: #f8f9fa;
-  border-color: #dee2e6;
-}
-
-.selectedClient {
-  background-color: #e7f5ff;
-  border-color: #a5d8ff;
-}
-
-.clientInfo {
-  display: flex;
-  flex-direction: column;
-}
-
-.clientName {
-  font-weight: 600;
-  margin-bottom: 5px;
-}
-
-.clientEmail {
-  color: #6c757d;
-  font-size: 14px;
-  margin-bottom: 5px;
-}
-
-.clientSignDate {
-  font-size: 13px;
-  color: #28a745;
-}
-
-.modalActions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 15px;
-  margin-top: 20px;
-}
-
-.cancelButton {
-  background-color: #6c757d;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.cancelButton:hover {
-  background-color: #5a6268;
-}
-
-.confirmButton {
-  background-color: #28a745;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 4px;
-  cursor: pointer;
+.interestsSection h4 {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: #334155;
 }
 
-.confirmButton:hover {
-  background-color: #218838;
+.interestsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
-.confirmButton:disabled {
-  background-color: #94d3a2;
-  cursor: not-allowed;
+.categoriaTag {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 14px;
+  background: linear-gradient(to right, #5a67d8, #805ad5);
+  color: white;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.categoriaTag:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.noInterests {
+  color: #94a3b8;
+  font-style: italic;
+  margin: 0;
 }
 
 /* Tag para status fechado */
@@ -1022,4 +1037,279 @@ tbody tr:hover {
   .pdfPreview {
     max-width: 100%;
   }
+}
+
+/* Estrutura do modal */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.signaturesModal {
+  background: white;
+  border-radius: 16px;
+  width: 95%;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+  animation: modalSlideIn 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+@keyframes modalSlideIn {
+  from { opacity: 0; transform: translateY(50px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Cabeçalho */
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 25px;
+  background: linear-gradient(to right, #4361ee, #3f37c9);
+  color: white;
+  border-radius: 16px 16px 0 0;
+}
+
+.headerContent {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.headerContent h2 {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 600;
+}
+
+.headerContent i {
+  font-size: 1.4rem;
+}
+
+.closeBtn {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  color: white;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.closeBtn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: rotate(90deg);
+}
+
+/* Corpo do modal */
+.modalBody {
+  padding: 25px;
+}
+
+.contractHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #eef2f7;
+}
+
+.contractTitle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  font-size: 1.4rem;
+  color: #1e293b;
+}
+
+.contractTitle i {
+  color: #4f46e5;
+}
+
+.signatureCount {
+  display: flex;
+  align-items: center;
+}
+
+.countBadge {
+  background: #e0e7ff;
+  color: #4f46e5;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+/* Lista de assinaturas */
+.signaturesContainer {
+  margin-top: 15px;
+}
+
+.signaturesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+  gap: 20px;
+}
+
+.signatureCard {
+  background: white;
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+  border: 1px solid #f1f5f9;
+  transition: all 0.3s ease;
+}
+
+.signatureCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(67, 97, 238, 0.15);
+  border-color: #e0e7ff;
+}
+
+.userInfo {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 18px;
+}
+
+.userAvatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 3px solid #f1f5f9;
+}
+
+.userAvatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.userDetails {
+  flex: 1;
+  overflow: hidden;
+}
+
+.userName {
+  margin: 0 0 5px 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1e293b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.userEmail {
+  margin: 0 0 8px 0;
+  font-size: 0.9rem;
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.signatureDate {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
+.signatureDate i {
+  font-size: 0.9rem;
+}
+
+.actionButtons {
+  display: flex;
+  gap: 12px;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 18px;
+}
+
+.actionBtn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.profileBtn {
+  background: #eef2ff;
+  color: #4f46e5;
+}
+
+.profileBtn:hover {
+  background: #e0e7ff;
+}
+
+.chatBtn {
+  background: #f0f9ff;
+  color: #0ea5e9;
+}
+
+.chatBtn:hover {
+  background: #e0f2fe;
+}
+
+/* Estado vazio */
+.emptyState {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.emptyIllustration {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 20px;
+  background: #f0f9ff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.emptyIllustration i {
+  font-size: 3rem;
+  color: #0ea5e9;
+}
+
+.emptyState h3 {
+  margin: 15px 0 10px;
+  font-size: 1.4rem;
+  color: #1e293b;
+}
+
+.emptyState p {
+  margin: 0;
+  color: #64748b;
+  font-size: 1rem;
+  max-width: 400px;
+  margin: 0 auto;
 }

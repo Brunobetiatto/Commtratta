@@ -510,7 +510,7 @@ const GerenciamentoContratos = () => {
 
             {/* Modal para ver assinaturas */}
             {showSignaturesModal && selectedContract && (
-              <div className={styles.modalOverlay1} onClick={closeAllModals}>
+              <div className={styles.modalOverlay} onClick={closeAllModals}>
                 <div className={styles.signaturesModal} onClick={e => e.stopPropagation()}>
                   {/* Cabeçalho */}
                   <div className={styles.modalHeader}>

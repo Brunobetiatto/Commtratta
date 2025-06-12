@@ -96,8 +96,7 @@
   color: var(--secondary);
   padding: 0;
   margin-right: 15px;
-  cursor: pointer;
-  pointer-events: none;
+  cursor: text;
 }
 
 .searchInput::placeholder {
@@ -249,3 +248,4 @@
     gap: 10px;
   }
 }
+

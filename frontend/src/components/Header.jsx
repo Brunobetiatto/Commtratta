@@ -1,35 +1,42 @@
-import React from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom'; // Importe useLocation e useNavigate
+import React, { useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import styles from './Header.module.css';
 
-const Header = ({ user }) => {
-  const location = useLocation(); // Hook para acessar a localização atual da rota
-  const navigate = useNavigate(); // Hook para navegação programática
+const Header = ({ user, onSearch }) => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState('');
 
   const handleSearchClick = () => {
-    // Verifica se a rota atual JÁ é '/explorar'
-    if (location.pathname !== '/explorar') {
-      navigate('/explorar'); // Navega para /explorar apenas se não estiver lá
+    if (location.pathname !== '/Explorar') {
+      navigate('/Explorar');
     }
-    // Se já estiver em /explorar, não faz nada
+    onSearch(searchTerm); // dispara busca
+  };
+
+  const handleInputChange = (e) => {
+    setSearchTerm(e.target.value);
+    if (location.pathname === '/Explorar') {
+      onSearch(e.target.value); // filtra ao digitar se já estiver na rota
+    }
   };
 
   return (
     <header className={styles.appHeader}>
       <div className={styles.headerLeft}>
-        <img
-          src="/favicon.png"
-          alt="Favicon"
-          className={styles.favicon}
-        />
-        <div className={styles.searchBar} onClick={handleSearchClick}>
+        <img src="/favicon.png" alt="Favicon" className={styles.favicon} />
+        <div className={styles.searchBar}>
           <input
             type="text"
             placeholder="Pesquisar..."
             className={styles.searchInput}
-            readOnly 
+          
+            onChange={handleInputChange}
           />
-          <i className={`fas fa-search ${styles.searchIcon}`}></i>
+          <i
+            className={`fas fa-search ${styles.searchIcon}`}
+            onClick={handleSearchClick}
+          ></i>
         </div>
       </div>
 

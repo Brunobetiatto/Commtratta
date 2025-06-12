@@ -41,9 +41,6 @@ function App() {
           <div className={styles.contentContainer}>
             <Routes>
               <Route path="/" element={<Listagem />} />
-              <Route path="/explorar" element={<Explorar />} />
-              <Route path="/cadastro-contrato" element={<CadastroContrato />} />
-              <Route path="/gerenciamento-contratos" element={<GerenciamentoContratos />} />
             </Routes>
           </div>
         </main>

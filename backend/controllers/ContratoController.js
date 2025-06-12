@@ -411,7 +411,6 @@ export const getContratosFechados = async (req, res) => {
 };
 
 
-// controllers/ContratoController.js
 export const filtrarContratos = async (req, res) => {
   const { categoriaId, search } = req.query;
   try {

@@ -40,14 +40,16 @@ const getFornecedorImageUrl = (rawUrl) => {
   return rawUrl;
 }
 
-const Listagem = () => {
-  const [contracts, setContracts] = useState([]);
+const Listagem = ( {searchTerm} ) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [selectedContract, setSelectedContract] = useState(null);
   const [contractDetails, setContractDetails] = useState(null);
   const [loadingDetails, setLoadingDetails] = useState(false);
+  const [allContracts, setAllContracts] = useState([]);
+  const [filteredContracts, setFilteredContracts] = useState([]);
   const { user } = useAuth();
+  console.log('searchTerm:', searchTerm);
 
   useEffect(() => {
   const fetchOpenContracts = async () => {
@@ -64,7 +66,8 @@ const Listagem = () => {
         
         if (response.data) {
           // Ordena por interesses em comum (já vem ordenado do backend)
-          setContracts(response.data);
+          setAllContracts(response.data);
+          setFilteredContracts(response.data);
         } else {
           setError('Erro ao carregar contratos');
         }
@@ -77,6 +80,37 @@ const Listagem = () => {
 
     fetchOpenContracts();
   }, []);
+
+  useEffect(() => {
+    if (!searchTerm) {
+      setFilteredContracts(allContracts);
+      return;
+    }
+    
+    const term = typeof searchTerm === 'object' 
+        ? searchTerm.searchTerm || ''
+        : searchTerm || '';
+      
+      const normalizedTerm = term.toLowerCase().trim();
+
+      if (!normalizedTerm) {
+        setFilteredContracts(allContracts);
+        return;
+      }
+   
+    const filtered = allContracts.filter(contract => {
+      return (
+        (contract.titulo && contract.titulo.toLowerCase().includes(term)) ||
+        (contract.descricao && contract.descricao.toLowerCase().includes(term)) ||
+        (contract.categorias && contract.categorias.some(
+          cat => cat.nome.toLowerCase().includes(term)
+        ))
+      );
+    });
+
+    setFilteredContracts(filtered);
+  }, [searchTerm, allContracts]);
+
 
   const handleSignContract = async () => {
     if (!user || !contractDetails) return;
@@ -294,14 +328,14 @@ const Listagem = () => {
       </div>
 
       <div className={styles.contractsList}>
-        {contracts.length === 0 ? (
+        {filteredContracts.length === 0 ? (
           <div className={styles.emptyState}>
             <i className="fas fa-file-contract"></i>
             <h3>Não há contratos abertos no momento</h3>
             <p>Quando novos contratos forem cadastrados, eles aparecerão aqui</p>
           </div>
         ) : (
-          contracts.map((contract) => (
+          filteredContracts.map((contract) => (
             <div
               key={contract.id}
               className={styles.contractCard}

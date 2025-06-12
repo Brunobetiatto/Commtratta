@@ -73,8 +73,6 @@ io.on('connection', (socket) => {
       io.to(chatId).emit('receiveMessage', novaMensagem);
       console.log(`Mensagem enviada para sala ${chatId} e salva no DB: ${novaMensagem.conteudo}`);
 
-      // 3. Opcional: Enviar uma confirmação específica de volta para o remetente
-      socket.emit('messageSentConfirmation', novaMensagem);
 
     } catch (error) {
       console.error('Erro ao processar mensagem via WebSocket:', error);

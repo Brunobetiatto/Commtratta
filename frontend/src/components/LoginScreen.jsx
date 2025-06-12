@@ -30,7 +30,7 @@ const LoginScreen = () => {
   return (
     <div className={styles.loginContainer}>
       <div className={styles.loginCard}>
-        <h2>Login</h2>
+        <h2>LOGIN</h2>
         
         {error && <div className={styles.errorMessage}>{error}</div>}
         

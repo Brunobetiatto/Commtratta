@@ -510,60 +510,84 @@ const GerenciamentoContratos = () => {
 
             {/* Modal para ver assinaturas */}
             {showSignaturesModal && selectedContract && (
-              <div className={styles.modalBackdrop} onClick={closeAllModals}>
-                <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
+              <div className={styles.modalOverlay1} onClick={closeAllModals}>
+                <div className={styles.signaturesModal} onClick={e => e.stopPropagation()}>
+                  {/* Cabeçalho */}
                   <div className={styles.modalHeader}>
-                    <h2>Assinaturas do Contrato</h2>
-                    <button className={styles.closeButton} onClick={closeAllModals}>
+                    <div className={styles.headerContent}>
+                      <i className="fas fa-signature"></i>
+                      <h2>Assinaturas do Contrato</h2>
+                    </div>
+                    <button className={styles.closeBtn} onClick={closeAllModals} aria-label="Fechar">
                       <i className="fas fa-times"></i>
                     </button>
                   </div>
                   
-                  <div className={styles.modalBody2}>
-                    <h3>{selectedContract.titulo}</h3>
-                    
+                  {/* Corpo */}
+                  <div className={styles.modalBody}>
+                    <div className={styles.contractHeader}>
+                      <h3 className={styles.contractTitle}>
+                        <i className="fas fa-file-contract"></i> {selectedContract.titulo}
+                      </h3>
+                      <div className={styles.signatureCount}>
+                        <span className={styles.countBadge}>
+                          {selectedContract.assinaturas} {selectedContract.assinaturas === 1 ? 'assinatura' : 'assinaturas'}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Lista de assinaturas */}
                     {selectedContract.assinaturas > 0 ? (
-                      <table className={styles.signaturesTable}>
-                        <thead>
-                          <tr>
-                            <th>Usuário</th>
-                            <th>Email</th>
-                            <th>Data da Assinatura</th>
-                            <th>Ações</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {selectedContract.usuariosAssinantes && 
-                          selectedContract.usuariosAssinantes.map(user => (
-                            <tr key={user.id}>
-                              <td>{user.nome || user.email.split('@')[0]}</td>
-                              <td>{user.email}</td>
-                              <td>{formatDate(user.data_insercao)}</td>
-                              <td>
+                      <div className={styles.signaturesContainer}>
+                        <div className={styles.signaturesGrid}>
+                          {/* CORREÇÃO DO ERRO: Verificação segura antes do map */}
+                          {(selectedContract.usuariosAssinantes || []).map(user => (
+                            <div key={user.id} className={styles.signatureCard}>
+                              <div className={styles.userInfo}>
+                                <div className={styles.userAvatar}>
+                                  <img 
+                                    src={getContractImageUrl(user.img) || '/default-profile.png'} 
+                                    alt={`${user.nome || user.email.split('@')[0]}`}
+                                    onError={(e) => e.target.src = '/default-profile.png'}
+                                  />
+                                </div>
+                                <div className={styles.userDetails}>
+                                  <h4 className={styles.userName}>
+                                    {user.nome || user.email.split('@')[0]}
+                                  </h4>
+                                  <p className={styles.userEmail}>{user.email}</p>
+                                  <div className={styles.signatureDate}>
+                                    <i className="fas fa-calendar-check"></i> 
+                                    {formatDate(user.data_insercao)}
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              <div className={styles.actionButtons}>
                                 <button 
-                                  className={styles.viewUserButton}
+                                  className={`${styles.actionBtn} ${styles.profileBtn}`}
                                   onClick={() => handleViewUserInfo(user)}
                                 >
-                                  <i className="fas fa-user"></i> Ver perfil
+                                  <i className="fas fa-user"></i> Perfil
                                 </button>
-
-                                
                                 <button 
-                                  className={styles.startChatButton}
+                                  className={`${styles.actionBtn} ${styles.chatBtn}`}
                                   onClick={() => handleStartChat(selectedContract.id, user.id)}
                                 >
-                                  <i className="fas fa-comment"></i> Iniciar Chat
+                                  <i className="fas fa-comment-dots"></i> Chat
                                 </button>
-                        
-                              </td>
-                            </tr>
+                              </div>
+                            </div>
                           ))}
-                        </tbody>
-                      </table>
+                        </div>
+                      </div>
                     ) : (
-                      <div className={styles.noSignatures}>
-                        <i className="fas fa-file-signature"></i>
-                        <p>Este contrato ainda não possui assinaturas</p>
+                      <div className={styles.emptyState}>
+                        <div className={styles.emptyIllustration}>
+                          <i className="fas fa-file-signature"></i>
+                        </div>
+                        <h3>Nenhuma assinatura encontrada</h3>
+                        <p>Este contrato ainda não possui assinaturas registradas</p>
                       </div>
                     )}
                   </div>
@@ -575,52 +599,75 @@ const GerenciamentoContratos = () => {
             {showUserInfoModal && selectedUser && (
               <div className={styles.modalBackdrop} onClick={closeAllModals}>
                 <div className={styles.userModalContent} onClick={e => e.stopPropagation()}>
+                  {/* Cabeçalho */}
                   <div className={styles.modalHeader}>
-                    <h2>Perfil do Usuário</h2>
-                    <button className={styles.closeButton} onClick={closeAllModals}>
+                    <h2>Detalhes do Usuário</h2>
+                    <button className={styles.closeButton} onClick={closeAllModals} aria-label="Fechar">
                       <i className="fas fa-times"></i>
                     </button>
                   </div>
                   
+                  {/* Corpo */}
                   <div className={styles.userModalBody}>
+                    {/* Perfil */}
                     <div className={styles.userProfile}>
                       <img 
                         src={getContractImageUrl(selectedUser.img) || 'http://localhost:8800/uploads/defaut2.png'} 
-                        alt="Perfil" 
+                        alt={`Avatar de ${selectedUser.nome || selectedUser.username}`} 
                         className={styles.userAvatar}
                         onError={(e) => {
                           e.target.onerror = null;
                           e.target.src = '/default-profile.png';
                         }}
                       />
-                      <h3 className={styles.userName}>
-                        {selectedUser.nome || selectedUser.email.split('@')[0]}
-                      </h3>
-                      <p className={styles.userEmail}>{selectedUser.email}</p>
+                      <div className={styles.profileInfo}>
+                        <h3 className={styles.userName}>
+                          {selectedUser.nome || selectedUser.username || selectedUser.email.split('@')[0]}
+                        </h3>
+                        <p className={styles.userEmail}>
+                          <i className="fas fa-envelope"></i> {selectedUser.email}
+                        </p>
+                        {selectedUser.username && (
+                          <p className={styles.userUsername}>
+                            <i className="fas fa-user"></i> {selectedUser.username}
+                          </p>
+                        )}
+                      </div>
                     </div>
                     
-                    <div className={styles.userDetails}>
-                      <div className={styles.detailItem}>
-                        <span className={styles.detailLabel}>Telefone</span>
-                        <p className={styles.detailValue}>
-                          {selectedUser.telefone || 'Não informado'}
-                        </p>
-                      </div>
+                    {/* Informações principais */}
+                    <div className={styles.infoGrid}>
                       
-                      <div className={styles.detailItem}>
-                        <span className={styles.detailLabel}>Data de Cadastro</span>
-                        <p className={styles.detailValue}>
-                          {formatDate(selectedUser.criado_em)}
-                        </p>
-                      </div>
-                      
-                      {selectedUser.interesses && (
+                      <div className={styles.infoCard}>
+                        <h4><i className="fas fa-phone"></i> Contato</h4>
                         <div className={styles.detailItem}>
-                          <span className={styles.detailLabel}>Interesses</span>
-                          <p className={styles.detailValue}>{selectedUser.interesses}</p>
+                          <span>Telefone:</span>
+                          <p>{selectedUser.telefone || 'Não informado'}</p>
                         </div>
-                      )}
+                        <div className={styles.detailItem}>
+                          <span>Telefone:</span>
+                          <p>{selectedUser.email || 'Não informado'}</p>
+                        </div>
+                      </div>
                     </div>
+                    
+                    {/* Interesses */}
+                    {selectedUser.interesses && (
+                      <div className={styles.interestsSection}>
+                        <h4><i></i> Interesses</h4>
+                        <div className={styles.interestsContainer}>
+                          {Array.isArray(selectedUser.interesses) && selectedUser.interesses.length > 0 ? (
+                            selectedUser.interesses.map((interesse, index) => (
+                              <span key={index} className={styles.categoriaTag}>
+                                {interesse.nome}
+                              </span>
+                            ))
+                          ) : (
+                            <p className={styles.noInterests}>Nenhum interesse informado</p>
+                          )}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -784,7 +831,7 @@ const GerenciamentoContratos = () => {
                                   <h3>Fornecedor</h3>
                                   <div className={styles.supplierHeader}>
                                     <img 
-                                      src={getContractImageUrl(user.img) || '/default-avatar.png'} 
+                                      src={getContractImageUrl(contractDetails.fornecedor_img) || '/default-avatar.png'} 
                                       alt="Fornecedor" 
                                       className={styles.supplierAvatar}
                                     />

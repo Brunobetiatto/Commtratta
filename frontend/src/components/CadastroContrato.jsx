@@ -119,7 +119,7 @@ const CadastrarContrato = () => {
       if (imagem) formDataToSend.append('imagem', imagem);
       if (arquivo) formDataToSend.append('arquivo', arquivo);
       if (user?.id) {
-        formDataToSend.append('empresa_id', user.id); 
+        formDataToSend.append('empresa_id', user.id); // Ajuste 'empresa_id' conforme seu backend
       }
 
       const response = await api.post('/contratos', formDataToSend, {

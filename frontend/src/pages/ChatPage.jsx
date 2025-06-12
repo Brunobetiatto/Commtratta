@@ -60,7 +60,25 @@ const ChatPage = () => {
 
       socket.on('receiveMessage', (message) => {
         console.log('Mensagem recebida em tempo real:', message);
-        addMessageOptimistically(message); // Adiciona a mensagem recebida ao estado
+
+        // Se a mensagem foi enviada pelo próprio usuário
+        if (message.remetente_id === user.id) {
+          // Substitui a mensagem otimista (mesmo conteúdo e horário aproximado)
+          setMessages((prevMessages) => {
+            const exists = prevMessages.some((msg) =>
+              msg.remetente_id === user.id &&
+              msg.conteudo === message.conteudo &&
+              Math.abs(new Date(msg.data_envio) - new Date(message.data_envio)) < 2000 // tolerância de 2s
+            );
+
+            if (exists) return prevMessages; // já temos a versão otimista, não adiciona
+
+            return [...prevMessages, message];
+          });
+        } else {
+          // Mensagem de outro usuário, adiciona normalmente
+          addMessageOptimistically(message);
+        }
       });
 
       socket.on('messageSentConfirmation', (message) => {

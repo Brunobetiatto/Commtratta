@@ -108,7 +108,7 @@ export const getUsers = async (req, res) => {
           WHEN pf.id IS NOT NULL THEN 'PF'
           ELSE 'Unknown'
         END AS tipo,
-        IF(COUNT(c.id), JSON_ARRAYAGG(DISTINCT JSON_OBJECT('id', c.id, 'nome', c.nome)), JSON_ARRAY()) AS interesses
+        IF(COUNT(c.id), JSON_ARRAYAGG(JSON_OBJECT('id', c.id, 'nome', c.nome)), JSON_ARRAY()) AS interesses
       FROM usuarios u
       LEFT JOIN pessoa_juridica pj ON u.id = pj.id
       LEFT JOIN pessoa_fisica pf ON u.id = pf.id
@@ -150,7 +150,7 @@ export const getUserById = async (req, res) => {
             WHEN pf.id IS NOT NULL THEN 'PF'
             ELSE 'Unknown'
           END AS tipo,
-          IF(COUNT(c.id), JSON_ARRAYAGG(DISTINCT JSON_OBJECT('id', c.id, 'nome', c.nome)), JSON_ARRAY()) AS interesses
+          IF(COUNT(c.id), JSON_ARRAYAGG(JSON_OBJECT('id', c.id, 'nome', c.nome)), JSON_ARRAY()) AS interesses
         FROM usuarios u
         LEFT JOIN pessoa_juridica pj ON u.id = pj.id
         LEFT JOIN pessoa_fisica pf ON u.id = pf.id
@@ -168,7 +168,7 @@ export const getUserById = async (req, res) => {
 
     const user = {
       ...usuario[0],
-      interesses: usuario[0].interesses ? JSON.parse(usuario[0].interesses) : []
+      interesses: Array.isArray(usuario[0].interesses) ? usuario[0].interesses : []
     };
     
     res.status(200).json(user);

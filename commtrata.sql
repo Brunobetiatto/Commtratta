@@ -12,7 +12,6 @@ CREATE TABLE usuarios (
     email          VARCHAR(120)  NOT NULL UNIQUE,
     telefone       VARCHAR(20),
     senha          CHAR(60)      NOT NULL,
-    interesses     TEXT,
     img            VARCHAR(145),
     criado_em      DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
     atualizado_em  DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP

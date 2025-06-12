@@ -1302,3 +1302,266 @@ tbody tr:hover {
   max-width: 400px;
   margin: 0 auto;
 }
+/* Fechar Contrato Modal */
+.modalBackdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  backdrop-filter: blur(4px);
+}
+
+.modalContent {
+  background: white;
+  border-radius: 16px;
+  width: 95%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow: hidden;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+  animation: modalAppear 0.4s cubic-bezier(0.18, 0.67, 0.6, 1.22);
+}
+
+@keyframes modalAppear {
+  from { 
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 25px;
+  background: linear-gradient(to right, #4361ee, #3f37c9);
+  color: white;
+  border-radius: 16px 16px 0 0;
+}
+
+.modalHeader h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.closeButton {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  color: white;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.closeButton:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: rotate(90deg);
+}
+
+.modalBody {
+  padding: 25px;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.modalBody h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 1.3rem;
+  color: #2d3748;
+  font-weight: 600;
+}
+
+.modalDescription {
+  color: #4a5568;
+  margin-bottom: 25px;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* Lista de Clientes */
+.clientList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 20px 0 30px;
+}
+
+.clientCard {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.clientCard:hover {
+  border-color: #c7d2fe;
+  box-shadow: 0 4px 12px rgba(67, 97, 238, 0.15);
+  transform: translateY(-2px);
+}
+
+.selectedClient {
+  border-color: #4361ee;
+  background-color: #f0f4ff;
+  box-shadow: 0 4px 12px rgba(67, 97, 238, 0.2);
+}
+
+.clientInfo {
+  flex: 1;
+}
+
+.clientName {
+  display: block;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 4px;
+  font-size: 1.05rem;
+}
+
+.clientEmail {
+  display: block;
+  color: #4a5568;
+  font-size: 0.9rem;
+  margin-bottom: 6px;
+}
+
+.clientSignDate {
+  display: block;
+  color: #718096;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.clientCard i.fa-check-circle {
+  color: #4361ee;
+  font-size: 1.4rem;
+  margin-left: 10px;
+}
+
+/* Estado sem assinaturas */
+.noSignatures {
+  text-align: center;
+  padding: 30px 20px;
+  background-color: #f8fafc;
+  border-radius: 12px;
+  border: 1px dashed #cbd5e1;
+  color: #718096;
+  margin: 20px 0;
+}
+
+.noSignatures i {
+  font-size: 2.5rem;
+  color: #cbd5e1;
+  margin-bottom: 15px;
+  display: block;
+}
+
+.noSignatures p {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+/* Botões de ação */
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  padding-top: 20px;
+  border-top: 1px solid #edf2f7;
+  margin-top: 10px;
+}
+
+.cancelButton {
+  background: transparent;
+  border: 1px solid #cbd5e1;
+  color: #4a5568;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cancelButton:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+}
+
+.confirmButton {
+  background: linear-gradient(to right, #18b200, #149100);
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(24, 178, 0, 0.2);
+}
+
+.confirmButton:hover:not(:disabled) {
+  background: linear-gradient(to right, #149100, #117500);
+  box-shadow: 0 6px 12px rgba(24, 178, 0, 0.3);
+  transform: translateY(-2px);
+}
+
+.confirmButton:disabled {
+  background: #cbd5e1;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .modalContent {
+    width: 90%;
+  }
+  
+  .modalHeader {
+    padding: 18px 20px;
+  }
+  
+  .modalBody {
+    padding: 20px;
+  }
+  
+  .clientCard {
+    padding: 14px 16px;
+  }
+  
+  .modalActions {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .cancelButton,
+  .confirmButton {
+    width: 100%;
+    justify-content: center;
+  }
+}

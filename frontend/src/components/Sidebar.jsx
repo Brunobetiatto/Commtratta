@@ -14,7 +14,7 @@ const Sidebar = () => {
   if (!user) return null;
 
   const getImageUrl = () => {
-    if (!user.img) return 'http://localhost:8800/uploads/default-avatar.png';
+    if (!user.img) return 'http://localhost:8800/uploads/defaut.png';
     
     if (user.img.includes('uploads')) {
       const filename = user.img.split('/').pop();
@@ -49,10 +49,6 @@ const Sidebar = () => {
             src={getImageUrl()}
             alt="Perfil" 
             className={styles.profileImage}
-            onError={(e) => {
-              e.target.onerror = null;
-              e.target.src = '/default-profile.png';
-            }}
           />
           <div className={styles.profileInfo}>
             {user.tipo === "PF" ? (

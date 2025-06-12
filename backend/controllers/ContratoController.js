@@ -411,34 +411,56 @@ export const getContratosFechados = async (req, res) => {
 };
 
 
+// backend/controllers/ContratoController.js
 export const filtrarContratos = async (req, res) => {
-  const { categoriaId, search } = req.query;
+  const { categorias, search } = req.query;
+  
   try {
     let sql = `
-      SELECT DISTINCT c.*,
-             u.email AS fornecedor_email
-      FROM contratos            c
-      JOIN pessoa_juridica      pj ON pj.id = c.id_fornecedor
-      JOIN usuarios             u  ON u.id = pj.id
-      /* ← aqui: usa as categorias do fornecedor */
-      LEFT JOIN fornecedor_categoria fc ON fc.id_fornecedor = pj.id
-      WHERE 1 = 1
+      SELECT DISTINCT 
+        c.*,
+        u.email AS fornecedor_email,
+        u.telefone AS fornecedor_telefone,
+        u.img AS fornecedor_img,
+        pj.cnpj AS fornecedor_cnpj,
+        pj.descricao AS fornecedor_descricao
+      FROM contratos c
+      JOIN pessoa_juridica pj ON c.id_fornecedor = pj.id
+      JOIN usuarios u ON pj.id = u.id
     `;
+    
     const params = [];
-
-    /* filtra pela categoria escolhida */
-    if (categoriaId) {
-      sql += ' AND fc.id_categoria = ?';
-      params.push(categoriaId);
+    const whereClauses = [];
+    
+    // Filtro por categorias
+    if (categorias) {
+      const categoryIds = categorias.split(',').map(id => parseInt(id.trim()));
+      
+      sql += `
+        JOIN contrato_categorias cc ON c.id = cc.id_contrato
+        WHERE cc.id_categoria IN (?)
+      `;
+      params.push(categoryIds);
+    } else {
+      sql += ' WHERE 1=1 ';
     }
-
+    
+    // Filtro por termo de busca
     if (search) {
-      sql += ' AND (c.titulo LIKE ? OR c.descricao LIKE ?)';
+      whereClauses.push(`
+        (c.titulo LIKE ? OR c.descricao LIKE ?)
+      `);
       params.push(`%${search}%`, `%${search}%`);
     }
-
-    sql += ' ORDER BY c.data_criacao DESC';
-
+    
+    // Combinar cláusulas WHERE
+    if (whereClauses.length > 0) {
+      sql += categorias ? ' AND ' : ' AND ';
+      sql += whereClauses.join(' AND ');
+    }
+    
+    sql += ' GROUP BY c.id ORDER BY c.data_criacao DESC';
+    
     const [rows] = await db.query(sql, params);
     res.status(200).json(rows);
   } catch (err) {

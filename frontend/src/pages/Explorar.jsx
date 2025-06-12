@@ -14,9 +14,13 @@ function Explorar() {
   const location = useLocation();
 
   const [searchTerm, setSearchTerm] = useState(''); 
+  const [filters, setFilters] = useState({ categories: [] });
 
   const handleSearch = (term) => {
     setSearchTerm(term);
+  };
+  const handleFilter = (categories) => {
+    setFilters({ ...filters, categories });
   };
 
   if (loading) {
@@ -39,12 +43,12 @@ function Explorar() {
       </div>
       
       <div className={styles.mainContent}>
-        <Header user={user} onSearch={handleSearch}/> 
+        <Header user={user} onSearch={handleSearch} onFilter={handleFilter}/> 
         
         <main className={styles.appMainContent}>
           <div className={styles.contentContainer}>
             <Routes>
-              <Route path="/" element={<Listagem searchTerm={searchTerm} />} />
+              <Route path="/" element={<Listagem searchTerm={searchTerm} filters={filters} />} />
             </Routes>
           </div>
         </main>

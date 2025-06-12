@@ -40,7 +40,7 @@ const getFornecedorImageUrl = (rawUrl) => {
   return rawUrl;
 }
 
-const Listagem = ( {searchTerm} ) => {
+const Listagem = ( {searchTerm, filters} ) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [selectedContract, setSelectedContract] = useState(null);
@@ -53,23 +53,26 @@ const Listagem = ( {searchTerm} ) => {
 
   useEffect(() => {
   const fetchOpenContracts = async () => {
+    const params = new URLSearchParams();
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get(
-          'http://localhost:8800/api/contratos/open', 
-          {
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
+        if (filters.categories.length > 0) {
+          params.append('categorias', filters.categories.join(','));
+        }
+        if (searchTerm) {
+          params.append('search', searchTerm);
+        }
+
+        const url = `http://localhost:8800/api/contratos/filter?${params.toString()}`;
+        const response = await axios.get(url, {
+          headers: {
+            Authorization: `Bearer ${token}`
           }
-        );
+        });
         
         if (response.data) {
-          // Ordena por interesses em comum (já vem ordenado do backend)
           setAllContracts(response.data);
           setFilteredContracts(response.data);
-        } else {
-          setError('Erro ao carregar contratos');
         }
       } catch (err) {
         setError(err.response?.data?.message || 'Falha na conexão com o servidor');
@@ -79,7 +82,7 @@ const Listagem = ( {searchTerm} ) => {
     };
 
     fetchOpenContracts();
-  }, []);
+  }, [searchTerm, filters]);
 
   useEffect(() => {
     if (!searchTerm) {

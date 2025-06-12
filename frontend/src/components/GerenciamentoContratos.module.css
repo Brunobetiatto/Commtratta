@@ -280,17 +280,7 @@ tbody tr:hover {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
 }
 
-.modalHeader {
-  padding: 20px;
-  border-bottom: 1px solid #e2e8f0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  position: sticky;
-  top: 0;
-  background: white;
-  z-index: 10;
-}
+
 
 .modalHeader h2 {
   margin: 0;
@@ -739,7 +729,6 @@ tbody tr:hover {
 
 .modalBody {
   display: grid;
-  grid-template-columns: 1fr 1fr;
   gap: 1.5rem;
 }
 

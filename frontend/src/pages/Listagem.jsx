@@ -30,6 +30,16 @@ const getContractImageUrl = (rawUrl) => {
   return rawUrl;
 };
 
+const getFornecedorImageUrl = (rawUrl) => {
+  if (!rawUrl) return 'http://localhost:8800/uploads/default-avatar.png';
+
+  if (rawUrl.includes('uploads')) {
+    const filename = rawUrl.split('/').pop();
+    return `http://localhost:8800/uploads/${filename}`;
+  }
+  return rawUrl;
+}
+
 const Listagem = () => {
   const [contracts, setContracts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -238,7 +248,7 @@ const Listagem = () => {
               <h3>Fornecedor</h3>
               <div className={styles.supplierHeader}>
                 <img 
-                  src={getContractImageUrl(user.img) || '/default-avatar.png'} 
+                  src={getFornecedorImageUrl(contractDetails.fornecedor_img) || '/default-avatar.png'} 
                   alt="Fornecedor" 
                   className={styles.supplierAvatar}
                 />

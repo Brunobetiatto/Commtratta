@@ -1,12 +1,13 @@
 // backend/controllers/UserController.js
 import db from "../db.js";
+import bcrypt from 'bcrypt';
 
 export const addUser = async (req, res) => {
   try {
     // Inicia a transação diretamente na conexão existente
     await db.beginTransaction();
 
-    const { email, telefone, senha, interesses, tipo, cpf, cnpj, descricao } = req.body;
+    const { username, pf_name, pf_surname, email, telefone, senha, interesses, tipo, cpf, cnpj, descricao } = req.body;
     const imagem = req.file ? `/uploads/${req.file.filename}` : null;
 
     // Verificar se o email já existe
@@ -19,10 +20,13 @@ export const addUser = async (req, res) => {
       return res.status(400).json({ message: 'Email já cadastrado' });
     }
 
+    const saltRounds = 10;
+    const hash = await bcrypt.hash(senha, saltRounds);
+
     // Inserir novo usuário
     const [result] = await db.query(
-      'INSERT INTO usuarios (email, telefone, senha, img) VALUES (?, ?, ?, ?)',
-      [email, telefone, senha, imagem]
+      'INSERT INTO usuarios (username, email, telefone, senha, img) VALUES (?, ?, ?, ?, ?)',
+      [username, email, telefone, hash, imagem]
     );
     const userId = result.insertId;
 
@@ -51,8 +55,8 @@ export const addUser = async (req, res) => {
       }
 
       await db.query(
-        'INSERT INTO pessoa_fisica (id, cpf) VALUES (?, ?)',
-        [userId, cpf]
+        'INSERT INTO pessoa_fisica (id, cpf, name, surname) VALUES (?, ?, ?, ?)',
+        [userId, cpf, pf_name, pf_surname]
       );
     } else if (tipo === 'juridica') {
       // Verificar se CNPJ já existe

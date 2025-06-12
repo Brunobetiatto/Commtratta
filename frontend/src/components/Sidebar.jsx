@@ -14,7 +14,7 @@ const Sidebar = () => {
   if (!user) return null;
 
   const getImageUrl = () => {
-    if (!user.img) return 'http://localhost:8800/uploads/defaut2.png';
+    if (!user.img) return 'http://localhost:8800/uploads/default-avatar.png';
     
     if (user.img.includes('uploads')) {
       const filename = user.img.split('/').pop();
@@ -55,41 +55,71 @@ const Sidebar = () => {
             }}
           />
           <div className={styles.profileInfo}>
-            <h3 className={styles.name}>{user.email.split('@')[0]}</h3>
+            {user.tipo === "PF" ? (
+              <h3 className={styles.name}>
+                {user.pf_name} 
+                <span style={{ fontSize: '0.8em', color: 'rgb(230, 230, 230)', fontStyle: 'italic' }}>
+                  <br />a.k.a. {user.username}
+                </span>
+              </h3>
+            ) : (
+              <h3 className={styles.name}>{user.username}</h3>
+            )}
           </div>
-        </div>
-        
-        <div className={styles.descriptionContainer}>
-          <p className={styles.description}>
-            {user.interesses || 'Bem-vindo'}
-          </p>
         </div>
 
-        {categories.length > 0 && (
-          <div className={styles.categoriesSection}>
-            <h4 className={styles.sectionTitle}>Suas Categorias</h4>
-            <div className={styles.categoriesContainer}>
-              {categories.map((category) => (
-                <span key={category.id} className={styles.categoryTag}>
-                  {category.nome}
-                </span>
-              ))}
+        {user.tipo === "PF" ? (
+          <>
+            <div className={styles.descriptionContainer}>
+              <p className={styles.description}>
+                {user.interesses || `Bem-vindo(a), ${user.pf_name} ${user.pf_surname}`}
+              </p>
             </div>
-          </div>
-        )}
-        {user.tipo_usuario === "PJ" && (
-          <div className={styles.menuSection}>
-            <button 
-              className={styles.menuButton}
-              onClick={() => navigate('/cadastrar-contrato')}
-            >
-              <i className="fas fa-file-contract"></i>
-              Cadastrar Contrato
-            </button>
-          </div>
+            {categories.length > 0 && (
+              <div className={styles.categoriesSection}>
+                <h4 className={styles.sectionTitle}>Interesses</h4>
+                <div className={styles.categoriesContainer}>
+                  {categories.map((category) => (
+                    <span key={category.id} className={styles.categoryTag}>
+                      {category.nome}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </>
+        ) : (
+          <>
+            <div className={styles.descriptionContainer}>
+              <p className={styles.description}>
+                {user.descricao}
+              </p>
+            </div>
+            {categories.length > 0 && (
+              <div className={styles.categoriesSection}>
+                <h4 className={styles.sectionTitle}>Interesses</h4>
+                <div className={styles.categoriesContainer}>
+                  {categories.map((category) => (
+                    <span key={category.id} className={styles.categoryTag}>
+                      {category.nome}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+            <div className={styles.menuSection}>
+              <button 
+                className={styles.menuButton}
+                onClick={() => navigate('/cadastrar-contrato')}
+              >
+                <i className="fas fa-file-contract"></i>
+                Cadastrar Contrato
+              </button>
+            </div>
+          </>
         )}
       </div>
-      
+
       <footer className={styles.sidebarFooter}>
         <button className={styles.logoutButton} onClick={logout}>
           <i className="fas fa-sign-out-alt"></i>

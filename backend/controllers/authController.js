@@ -1,6 +1,7 @@
 import db from '../db.js';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import bcrypt from 'bcrypt';
 
 dotenv.config();
 
@@ -12,6 +13,9 @@ export const login = async (req, res) => {
     const [rows] = await db.query(
       `
       SELECT u.*, 
+        pf.name  AS pf_name,
+        pf.surname AS pf_surname,
+        pj.descricao as pj_descricao,
         IF(pf.id IS NOT NULL, 'PF', 'PJ') AS tipo_usuario,
         COALESCE(pf.id, pj.id) AS pessoa_id
       FROM usuarios u
@@ -28,7 +32,8 @@ export const login = async (req, res) => {
 
     const user = rows[0];
 
-    if (senha !== user.senha) {
+    const ok = await bcrypt.compare(senha, user.senha);
+    if (!ok) {
       return res.status(401).json({ error: 'Credenciais inválidas' });
     }
 

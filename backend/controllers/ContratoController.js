@@ -24,6 +24,7 @@ export const getContratosAbertos = async (req, res) => {
         c.data_validade, 
         c.status,
         c.contrato_img,
+        u.img AS fornecedor_img,
         u.email AS fornecedor_email,
         pj.cnpj AS fornecedor_cnpj,
         COUNT(cc.id_categoria) AS interesses_comum

@@ -8,19 +8,22 @@ USE commtratta;
 /* ------------------ USUÁRIOS E ESPECIALIZAÇÕES ------------------ */
 CREATE TABLE usuarios (
     id             BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    username       VARCHAR(60) NOT NULL,
     email          VARCHAR(120)  NOT NULL UNIQUE,
     telefone       VARCHAR(20),
-    senha     CHAR(60)      NOT NULL,
+    senha          CHAR(60)      NOT NULL,
     interesses     TEXT,
-    img VARCHAR(145),
+    img            VARCHAR(145),
     criado_em      DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
     atualizado_em  DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP
                   ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE pessoa_fisica (
-    id   BIGINT UNSIGNED PRIMARY KEY,           -- = usuarios.id
-    cpf  CHAR(11) NOT NULL UNIQUE,
+    id        BIGINT UNSIGNED PRIMARY KEY,           -- = usuarios.id
+    cpf       CHAR(11) NOT NULL UNIQUE,
+    name      VARCHAR(20) NOT NULL,
+    surname   VARCHAR(30) NOT NULL,
     CONSTRAINT fk_pfisica__id
         FOREIGN KEY (id) REFERENCES usuarios(id)
         ON DELETE CASCADE
@@ -67,8 +70,8 @@ CREATE TABLE contratos (
 
 CREATE TABLE contrato_usuarios (
     id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-    usuario_id BIGINT UNSIGNED NOT NULL,
-    contrato_id BIGINT UNSIGNED NOT NULL,
+    usuario_id   BIGINT UNSIGNED NOT NULL,
+    contrato_id  BIGINT UNSIGNED NOT NULL,
     data_insercao DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     
     CONSTRAINT fk_contrato_usuarios_usuario
@@ -80,7 +83,6 @@ CREATE TABLE contrato_usuarios (
         ON DELETE CASCADE
 );
 
-
 /* ---------------------- CATEGORIAS ---------------------- */
 CREATE TABLE categorias (
     id     BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
@@ -88,7 +90,7 @@ CREATE TABLE categorias (
 );
 
 CREATE TABLE contrato_categorias (
-    id_contrato BIGINT UNSIGNED NOT NULL,
+    id_contrato  BIGINT UNSIGNED NOT NULL,
     id_categoria BIGINT UNSIGNED NOT NULL,
     PRIMARY KEY (id_contrato, id_categoria),
     CONSTRAINT fk_contratocat__contrato
@@ -100,13 +102,12 @@ CREATE TABLE contrato_categorias (
 );
 
 CREATE TABLE usuario_interesses (
-    usuario_id BIGINT UNSIGNED NOT NULL,
+    usuario_id   BIGINT UNSIGNED NOT NULL,
     categoria_id BIGINT UNSIGNED NOT NULL,
     PRIMARY KEY (usuario_id, categoria_id),
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
     FOREIGN KEY (categoria_id) REFERENCES categorias(id) ON DELETE CASCADE
 );
-
 
 /* fornecedor × categoria (N-para-N) */
 CREATE TABLE fornecedor_categoria (
@@ -169,39 +170,36 @@ CREATE TABLE pagamentos_contrato (
         FOREIGN KEY (id_pagamento) REFERENCES pagamentos(id)
 );
 
+/* ----------------------- CHATS E MENSAGENS ----------------------- */
 CREATE TABLE chats (
-    id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-    contrato_id BIGINT UNSIGNED NOT NULL,
+    id            BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    contrato_id   BIGINT UNSIGNED NOT NULL,
     fornecedor_id BIGINT UNSIGNED NOT NULL,
-    cliente_id BIGINT UNSIGNED NOT NULL,
-    data_criacao DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    cliente_id    BIGINT UNSIGNED NOT NULL,
+    data_criacao  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     
     CONSTRAINT fk_chat_contrato
         FOREIGN KEY (contrato_id) REFERENCES contratos(id)
         ON DELETE CASCADE,
-        
     CONSTRAINT fk_chat_fornecedor
         FOREIGN KEY (fornecedor_id) REFERENCES usuarios(id)
         ON DELETE CASCADE,
-        
     CONSTRAINT fk_chat_cliente
         FOREIGN KEY (cliente_id) REFERENCES usuarios(id)
         ON DELETE CASCADE
 );
 
-
 CREATE TABLE mensagens (
-    id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-    chat_id BIGINT UNSIGNED NOT NULL,
+    id           BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    chat_id      BIGINT UNSIGNED NOT NULL,
     remetente_id BIGINT UNSIGNED NOT NULL,
-    conteudo TEXT NOT NULL,
-    data_envio DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    lida BOOLEAN NOT NULL DEFAULT 0,
+    conteudo     TEXT NOT NULL,
+    data_envio   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    lida         BOOLEAN NOT NULL DEFAULT 0,
     
     CONSTRAINT fk_mensagem_chat
         FOREIGN KEY (chat_id) REFERENCES chats(id)
         ON DELETE CASCADE,
-        
     CONSTRAINT fk_mensagem_remetente
         FOREIGN KEY (remetente_id) REFERENCES usuarios(id)
         ON DELETE CASCADE
@@ -216,24 +214,18 @@ INSERT INTO categorias (nome) VALUES
   ('Limpeza'), ('TI'), ('RH'), ('Marketing'), ('Logística');
 
 /* 2 ▸ Usuários */
-INSERT INTO usuarios (email, telefone, senha, interesses) VALUES
-  ('alice@cliente.com'        , '+55-11-99999-9999',
-   REPEAT('a',60), 'RH,Finanças'),
-  ('bob@cliente.com'          , '+55-11-98888-8888',
-   REPEAT('b',60), 'TI,DevOps'),
-  ('glauco@dunicorniothinking.com', '+55-41-91234-5678',
-   REPEAT('g',60), 'Design Thinking, Workshop'),
-  ('empresa1@forn.com'        , '+55-11-3216-5432',
-   REPEAT('c',60), 'Limpeza,Facilities'),
-  ('empresa2@forn.com'        , '+55-11-3249-8765',
-   REPEAT('d',60), 'TI,Cloud'),
-  ('empresa3@forn.com'        , '+55-11-3248-7651',
-   REPEAT('e',60), 'Marketing,Design');
+INSERT INTO usuarios (username, email, telefone, senha, interesses) VALUES
+  ('alice'    , 'alice@cliente.com'        , '+55-11-99999-9999', REPEAT('a',60), 'RH,Finanças'),
+  ('bob'      , 'bob@cliente.com'          , '+55-11-98888-8888', REPEAT('b',60), 'TI,DevOps'),
+  ('glauco'   , 'glauco@dunicorniothinking.com', '+55-41-91234-5678', REPEAT('g',60), 'Design Thinking, Workshop'),
+  ('empresa1' , 'empresa1@forn.com'        , '+55-11-3216-5432', REPEAT('c',60), 'Limpeza,Facilities'),
+  ('empresa2' , 'empresa2@forn.com'        , '+55-11-3249-8765', REPEAT('d',60), 'TI,Cloud'),
+  ('empresa3' , 'empresa3@forn.com'        , '+55-11-3248-7651', REPEAT('e',60), 'Marketing,Design');
 
 /* 3 ▸ Especializações PF / PJ */
-INSERT INTO pessoa_fisica (id, cpf) VALUES
-  (1, '11111111111'),
-  (2, '22222222222');
+INSERT INTO pessoa_fisica (id, cpf, name, surname) VALUES
+  (1, '11111111111', 'Alice', 'Silva'),
+  (2, '22222222222', 'Bob', 'Souza');
 
 INSERT INTO pessoa_juridica (id, cnpj, descricao) VALUES
   (3, '12345678000199', 'Empresa de Serviços Gerais'),

@@ -409,3 +409,41 @@ export const getContratosFechados = async (req, res) => {
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 };
+
+
+// controllers/ContratoController.js
+export const filtrarContratos = async (req, res) => {
+  const { categoriaId, search } = req.query;
+  try {
+    let sql = `
+      SELECT DISTINCT c.*,
+             u.email AS fornecedor_email
+      FROM contratos            c
+      JOIN pessoa_juridica      pj ON pj.id = c.id_fornecedor
+      JOIN usuarios             u  ON u.id = pj.id
+      /* ← aqui: usa as categorias do fornecedor */
+      LEFT JOIN fornecedor_categoria fc ON fc.id_fornecedor = pj.id
+      WHERE 1 = 1
+    `;
+    const params = [];
+
+    /* filtra pela categoria escolhida */
+    if (categoriaId) {
+      sql += ' AND fc.id_categoria = ?';
+      params.push(categoriaId);
+    }
+
+    if (search) {
+      sql += ' AND (c.titulo LIKE ? OR c.descricao LIKE ?)';
+      params.push(`%${search}%`, `%${search}%`);
+    }
+
+    sql += ' ORDER BY c.data_criacao DESC';
+
+    const [rows] = await db.query(sql, params);
+    res.status(200).json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Erro interno do servidor' });
+  }
+};

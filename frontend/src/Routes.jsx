@@ -8,6 +8,7 @@ import CadastroContrato from './components/CadastroContrato';
 import GerenciamentoContratos from './components/GerenciamentoContrato';
 import ChatListPage from './pages/ChatListPage';
 import ChatPage from './pages/ChatPage';
+import Explorar from './pages/Explorar';
 const AppRoutes = () => {
   const { isAuthenticated, loading } = useAuth();
 
@@ -52,6 +53,12 @@ const AppRoutes = () => {
         path="/chats/:chatId"
         element={
           isAuthenticated ? <ChatPage /> : <Navigate to="/login" replace />
+        }
+      />
+      <Route
+        path="/explorar"
+        element={
+          isAuthenticated ? <Explorar /> : <Navigate to="/login" replace />
         }
       />
     </Routes>

@@ -5,6 +5,7 @@ import {
   assinarContrato,
   cadastrarContrato,
   getContratos,
+  filtrarContratos,
   getContratoById, 
   getAssinantesContrato,
   getContratosByFornecedor,
@@ -46,6 +47,7 @@ router.post(
   cadastrarContrato
 );
 router.get('/open', getContratosAbertos);
+router.get('/filter', filtrarContratos);
 router.get('/', getContratos);
 router.get('/meus-contratos', getContratosByFornecedor); 
 router.get('/assinados', verifyToken, getContratosAssinados);
